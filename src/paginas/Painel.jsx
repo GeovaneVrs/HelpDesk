@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Botao } from '../componentes/Botao'
 import { useSessao } from '../contexto/Sessao'
 import { listarChamados } from '../servicos/chamados'
@@ -40,6 +41,7 @@ export function Painel() {
   const agora = new Date()
   const atribuidos = chamados.filter((chamado) => chamado.responsavelId)
   const livres = chamados.filter((chamado) => !chamado.responsavelId)
+  const meus = atribuidos.filter((chamado) => chamado.responsavelId === usuario.id)
   const total = chamados.length
   const primeiroNome = usuario.nome?.trim().split(/\s+/)[0] || 'equipe'
 
@@ -157,6 +159,61 @@ export function Painel() {
             <span><i className="ponto ponto-grafico-atribuido" />Tempo até assumir</span>
             <span><i className="ponto ponto-grafico-livre" />Ainda sem atribuição</span>
           </div>
+        </article>
+      </section>
+
+      <section className="painel-colunas" aria-label="Fila em detalhe">
+        <article className="grafico-cartao">
+          <div className="grafico-topo">
+            <div>
+              <span className="sobretitulo">AGUARDANDO</span>
+              <h2>Sem atribuição</h2>
+            </div>
+            <span className="fila-contagem">{livres.length}</span>
+          </div>
+          {livres.length === 0 ? (
+            <p className="grafico-vazio">Nenhum chamado esperando responsável.</p>
+          ) : (
+            <ul className="painel-lista">
+              {livres.map((chamado) => {
+                const espera = tempos.find((item) => item.id === chamado.id)
+                return (
+                  <li key={chamado.id}>
+                    <Link to="/chamados">
+                      <strong>{chamado.titulo}</strong>
+                      <span>{chamado.autorNome}</span>
+                    </Link>
+                    <em>{espera ? formatarDuracao(espera.horas) : '—'}</em>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </article>
+
+        <article className="grafico-cartao">
+          <div className="grafico-topo">
+            <div>
+              <span className="sobretitulo">SUA FILA</span>
+              <h2>Com você</h2>
+            </div>
+            <span className="fila-contagem fila-contagem-azul">{meus.length}</span>
+          </div>
+          {meus.length === 0 ? (
+            <p className="grafico-vazio">Você ainda não assumiu nenhum chamado.</p>
+          ) : (
+            <ul className="painel-lista">
+              {meus.map((chamado) => (
+                <li key={chamado.id}>
+                  <Link to={`/chamados/${chamado.id}`}>
+                    <strong>{chamado.titulo}</strong>
+                    <span>{chamado.autorNome}</span>
+                  </Link>
+                  <em>Abrir conversa</em>
+                </li>
+              ))}
+            </ul>
+          )}
         </article>
       </section>
     </>

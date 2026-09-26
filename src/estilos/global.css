@@ -94,7 +94,16 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36);
 .numero-nota { overflow: hidden; color: #9aa4b2; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Dashboard e fila */
-.painel-graficos { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(0, 1.25fr); gap: 16px; align-items: stretch; }
+.painel-graficos, .painel-colunas { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(0, 1.25fr); gap: 16px; align-items: stretch; }
+.painel-colunas { grid-template-columns: 1fr 1fr; margin-top: 16px; }
+.painel-lista { display: grid; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.painel-lista li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 12px 12px; border: 1px solid #eef1f6; border-radius: 12px; background: #fbfcfe; }
+.painel-lista a { min-width: 0; color: inherit; text-decoration: none; }
+.painel-lista strong { display: block; overflow: hidden; color: #243044; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.painel-lista span { display: block; margin-top: 2px; color: #7d8999; font-size: 12px; }
+.painel-lista em { color: #516178; font-size: 12px; font-style: normal; font-weight: 700; }
+.painel-lista a:hover strong { color: var(--blue); }
+.fila-contagem-azul { background: var(--blue-soft); color: var(--blue); }
 .grafico-cartao { padding: 22px 22px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 10px 30px rgba(31, 47, 74, .04); }
 .grafico-cartao .sobretitulo { display: block; margin-bottom: 6px; color: #98a3b3; }
 .grafico-cartao h2 { color: var(--ink); font-size: 18px; font-weight: 700; letter-spacing: -.03em; }
@@ -250,7 +259,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36);
 
 @media (max-width: 980px) {
   .conteudo, .rodape { width: calc(100% - 20px); }
-  .painel-graficos { grid-template-columns: 1fr; }
+  .painel-graficos, .painel-colunas { grid-template-columns: 1fr; }
   .numero { gap: 11px; padding: 16px 14px; }
   .numero-icone { width: 34px; height: 34px; }
 }

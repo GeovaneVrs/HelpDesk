@@ -63,13 +63,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .lateral-perfil { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; }
 .avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 12px; background: rgba(255,255,255,.15); color: #fff; font-size: 11px; font-weight: 700; }
 .app-principal { min-width: 0; flex: 1; display: flex; flex-direction: column; }
-.topo { height: 56px; background: transparent; }
-.topo-interno { width: min(1240px, calc(100% - 28px)); height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 auto; }
-.breadcrumb { color: #657287; font-size: 12px; font-weight: 550; }
-.breadcrumb span { padding: 0 8px; color: #c3cad4; }
-.topo-status { display: flex; align-items: center; gap: 8px; color: #8994a4; font-size: 11px; }
-.status-online { width: 7px; height: 7px; border-radius: 50%; background: #30b77b; box-shadow: 0 0 0 3px #e3f6ed; }
-.conteudo { width: min(1240px, calc(100% - 28px)); flex: 1; margin: 0 auto; padding: 8px 0 40px; }
+.conteudo { width: min(1240px, calc(100% - 28px)); flex: 1; margin: 0 auto; padding: 18px 0 40px; }
 .rodape { width: min(1240px, calc(100% - 28px)); display: flex; justify-content: space-between; gap: 12px; margin: 0 auto; padding: 16px 0 10px; border-top: 1px solid var(--line); color: #9aa4b2; font-size: 10px; }
 .rodape span:first-child { font-weight: 750; letter-spacing: .12em; }
 
@@ -255,7 +249,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36);
 .vazio p { max-width: 360px; margin: 7px auto 17px; color: #7e8b9e; font-size: 12px; }
 
 @media (max-width: 980px) {
-  .topo-interno, .conteudo, .rodape { width: calc(100% - 20px); }
+  .conteudo, .rodape { width: calc(100% - 20px); }
   .painel-graficos { grid-template-columns: 1fr; }
   .numero { gap: 11px; padding: 16px 14px; }
   .numero-icone { width: 34px; height: 34px; }
@@ -267,11 +261,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36);
   .nav-grupo { flex-direction: row; flex: 1; overflow-x: auto; }
   .nav-dica { display: none; }
   .lateral-perfil { flex-direction: row; margin: 0 0 0 auto; padding: 0; }
-  .topo { height: 45px; }
-  .topo-interno, .conteudo, .rodape { width: calc(100% - 32px); }
-  .topo-status { font-size: 0; }
-  .topo-status .status-online { width: 8px; height: 8px; }
-  .conteudo { padding: 27px 0 38px; }
+  .conteudo, .rodape { width: calc(100% - 16px); }
+  .conteudo { padding: 16px 0 32px; }
   .cabecalho-pagina { align-items: flex-start; flex-direction: column; gap: 15px; margin-bottom: 20px; }
   .numeros { grid-template-columns: 1fr; gap: 9px; margin-bottom: 14px; }
   .numero { min-height: 84px; align-items: center; padding: 13px 15px; }

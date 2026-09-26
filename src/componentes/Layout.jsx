@@ -12,22 +12,6 @@ function Icone({ children }) {
   )
 }
 
-const ROTULOS = {
-  '/painel': 'Visão geral',
-  '/chamados': 'Chamados',
-  '/chamados/novo': 'Novo chamado',
-  '/conhecimento': 'Base de conhecimento',
-  '/relatorios': 'Relatórios',
-  '/equipe': 'Equipe',
-  '/solicitantes': 'Solicitantes',
-  '/configuracoes': 'Configurações',
-}
-
-function trilha(pathname) {
-  if (/^\/chamados\/.+/.test(pathname) && !pathname.endsWith('/novo')) return 'Conversa'
-  return ROTULOS[pathname] || 'Chamados'
-}
-
 function Dica({ rotulo, texto }) {
   return (
     <span className="nav-dica">
@@ -126,12 +110,6 @@ export function Layout() {
       </aside>
 
       <div className="app-principal">
-        <header className="topo">
-          <div className="topo-interno">
-            <span className="breadcrumb">Helpdesk <span aria-hidden="true">/</span> {trilha(pathname)}</span>
-            <div className="topo-status"><span className="status-online" /> Sistema acadêmico · Equipe Rocket</div>
-          </div>
-        </header>
         <main className="conteudo"><Outlet /></main>
         <footer className="rodape"><span>HELPDESK</span><span>Projeto acadêmico · Equipe Rocket · AV1</span></footer>
       </div>

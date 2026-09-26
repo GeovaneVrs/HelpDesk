@@ -1,221 +1,157 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Botao } from '../componentes/Botao'
+import { EstadoVazio } from '../componentes/EstadoVazio'
 import { useSessao } from '../contexto/Sessao'
-import { listarChamados } from '../servicos/chamados'
-import { listarMensagens } from '../servicos/mensagens'
+import { assumirChamado, listarChamados } from '../servicos/chamados'
+import { formatarData, iniciais } from '../uteis/texto'
 import { useTitulo } from '../uteis/useTitulo'
 
-function horasEntre(inicio, fim) {
-  const ms = new Date(fim).getTime() - new Date(inicio).getTime()
-  if (!Number.isFinite(ms) || ms < 0) return 0
-  return ms / 36e5
-}
-
-function formatarDuracao(horas) {
-  if (horas < 1) {
-    const minutos = Math.max(1, Math.round(horas * 60))
-    return `${minutos} min`
-  }
-  if (horas < 48) {
-    const inteiras = Math.round(horas)
-    return inteiras === 1 ? '1 hora' : `${inteiras} horas`
-  }
-  const dias = Math.round(horas / 24)
-  return dias === 1 ? '1 dia' : `${dias} dias`
-}
-
-function marcoDeResposta(chamado) {
-  if (chamado.assumidoEm) return chamado.assumidoEm
-  if (!chamado.responsavelId) return null
-  const resposta = listarMensagens(chamado.id).find((mensagem) => mensagem.autorId === chamado.responsavelId)
-  return resposta?.criadoEm || null
-}
+const FILTROS = [
+  { id: 'todos', rotulo: 'Todos' },
+  { id: 'livres', rotulo: 'Sem responsável' },
+  { id: 'meus', rotulo: 'Comigo' },
+]
 
 export function Painel() {
   const { usuario } = useSessao()
-  const [chamados] = useState(() => listarChamados())
+  const [chamados, setChamados] = useState(() => listarChamados())
+  const [filtro, setFiltro] = useState('todos')
+  const [busca, setBusca] = useState('')
+  const [erro, setErro] = useState('')
 
   useTitulo('Visão geral')
 
-  const agora = new Date()
-  const atribuidos = chamados.filter((chamado) => chamado.responsavelId)
-  const livres = chamados.filter((chamado) => !chamado.responsavelId)
-  const meus = atribuidos.filter((chamado) => chamado.responsavelId === usuario.id)
-  const total = chamados.length
-  const primeiroNome = usuario.nome?.trim().split(/\s+/)[0] || 'equipe'
+  const termo = busca.trim().toLowerCase()
+  const chamadosFiltrados = chamados.filter((chamado) => {
+    if (filtro === 'livres' && chamado.responsavelId) return false
+    if (filtro === 'meus' && chamado.responsavelId !== usuario.id) return false
 
-  const tempos = chamados.map((chamado) => {
-    const marco = marcoDeResposta(chamado)
-    if (marco) {
-      return { id: chamado.id, titulo: chamado.titulo, horas: horasEntre(chamado.criadoEm, marco), tipo: 'resposta' }
-    }
-    if (!chamado.responsavelId) {
-      return { id: chamado.id, titulo: chamado.titulo, horas: horasEntre(chamado.criadoEm, agora), tipo: 'espera' }
-    }
-    return { id: chamado.id, titulo: chamado.titulo, horas: null, tipo: 'sem-marco' }
+    const textoChamado = `${chamado.titulo} ${chamado.autorNome}`.toLowerCase()
+    return textoChamado.includes(termo)
   })
 
-  const respondidos = tempos.filter((item) => item.tipo === 'resposta')
-  const media = respondidos.length
-    ? respondidos.reduce((soma, item) => soma + item.horas, 0) / respondidos.length
-    : null
-  const semMarco = tempos.filter((item) => item.tipo === 'sem-marco').length
-  const barras = tempos
-    .filter((item) => item.horas !== null)
-    .sort((a, b) => b.horas - a.horas)
-  const maior = Math.max(...barras.map((item) => item.horas), 1)
-  const volta = 2 * Math.PI * 58
-  const trechoAtribuido = total ? (atribuidos.length / total) * volta : 0
+  const semResponsavel = chamados.filter((chamado) => !chamado.responsavelId).length
+  const meusChamados = chamados.filter((chamado) => chamado.responsavelId === usuario.id).length
+  const contagens = {
+    todos: chamados.length,
+    livres: semResponsavel,
+    meus: meusChamados,
+  }
+
+  function assumir(id) {
+    const resultado = assumirChamado(id, usuario)
+    setChamados(listarChamados())
+    setErro(resultado.ok ? '' : resultado.erro)
+  }
+
+  function responsavelDoChamado(chamado) {
+    if (!chamado.responsavelId) return 'Disponível para atendimento'
+    if (chamado.responsavelId === usuario.id) return 'Atribuído a você'
+    return chamado.responsavelNome || 'Responsável definido'
+  }
 
   return (
-    <>
-      <header className="cabecalho-pagina">
+    <div className="dashboard">
+      <header className="dashboard-cabecalho">
         <div>
           <span className="sobretitulo">CENTRAL DE ATENDIMENTO</span>
           <h1>Visão geral</h1>
-          <p className="subtitulo">Olá, {primeiroNome}. O resumo da fila e do tempo até o atendimento.</p>
+          <p className="subtitulo">Fila e atendimentos da equipe em um só lugar.</p>
         </div>
-        <Botao para="/chamados">Ver chamados</Botao>
+        <Botao para="/chamados">Ver todos os chamados <span aria-hidden="true">↗</span></Botao>
       </header>
 
-      <section className="painel-graficos" aria-label="Gráficos da fila">
-        <article className="grafico-cartao">
-          <span className="sobretitulo">ATRIBUIÇÃO</span>
-          <h2>Chamados da fila</h2>
-          <div className="donut-corpo">
-            <svg className="donut" viewBox="0 0 160 160" role="img" aria-label={`${atribuidos.length} atribuídos e ${livres.length} sem atribuição`}>
-              <circle cx="80" cy="80" r="58" fill="none" stroke="var(--track-donut)" strokeWidth="16" />
-              {total > 0 ? (
-                <circle
-                  className="donut-arco"
-                  cx="80"
-                  cy="80"
-                  r="58"
-                  fill="none"
-                  stroke="#3d74ea"
-                  strokeWidth="16"
-                  strokeDasharray={`${trechoAtribuido} ${volta - trechoAtribuido}`}
-                  transform="rotate(-90 80 80)"
-                  style={{ '--volta': `${volta}px` }}
-                />
-              ) : null}
-              <text x="80" y="78" textAnchor="middle" className="donut-numero">{total}</text>
-              <text x="80" y="98" textAnchor="middle" className="donut-rotulo">chamados</text>
-            </svg>
-            <ul className="donut-lista">
-              <li>
-                <span><i className="ponto ponto-grafico-atribuido" />Atribuídos</span>
-                <strong>{atribuidos.length}</strong>
-              </li>
-              <li>
-                <span><i className="ponto ponto-grafico-livre" />Sem atribuição</span>
-                <strong>{livres.length}</strong>
-              </li>
-            </ul>
-          </div>
+      <section className="dashboard-resumo" aria-label="Resumo dos chamados">
+        <article className="resumo-item">
+          <span className="resumo-rotulo">Chamados na fila</span>
+          <strong>{chamados.length}</strong>
+          <span className="resumo-detalhe">Total registrado</span>
         </article>
+        <article className="resumo-item">
+          <span className="resumo-rotulo">Aguardando responsável</span>
+          <strong>{semResponsavel}</strong>
+          <span className="resumo-detalhe">Precisam de atendimento</span>
+        </article>
+        <article className="resumo-item">
+          <span className="resumo-rotulo">Atribuídos a mim</span>
+          <strong>{meusChamados}</strong>
+          <span className="resumo-detalhe">Sob sua responsabilidade</span>
+        </article>
+      </section>
 
-        <article className="grafico-cartao">
-          <div className="grafico-topo">
-            <div>
-              <span className="sobretitulo">TEMPO DE RESPOSTA</span>
-              <h2>Até alguém assumir</h2>
-            </div>
-            <p className="tempo-media">
-              <strong>{media === null ? '—' : formatarDuracao(media)}</strong>
-              <span>{media === null ? 'sem medição ainda' : 'média dos atribuídos'}</span>
-            </p>
+      <section className="fila-painel" aria-labelledby="titulo-fila">
+        <header className="fila-cabecalho">
+          <div>
+            <h2 id="titulo-fila">Fila de chamados</h2>
+            <p>Solicitações mais recentes primeiro</p>
           </div>
+          <span className="fila-total">{chamadosFiltrados.length} {chamadosFiltrados.length === 1 ? 'chamado' : 'chamados'}</span>
+        </header>
 
-          {barras.length === 0 ? (
-            <p className="grafico-vazio">Quando houver chamados, o tempo de cada um aparece aqui.</p>
-          ) : (
-            <ul className="tempo-lista">
-              {barras.map((item) => (
-                <li key={item.id} className="tempo-item">
-                  <span className="tempo-nome">{item.titulo}</span>
-                  <strong>{formatarDuracao(item.horas)}</strong>
-                  <div className="tempo-trilho" role="img" aria-label={`${item.titulo}: ${formatarDuracao(item.horas)}, ${item.tipo === 'resposta' ? 'até assumir' : 'ainda sem atribuição'}`}>
-                    <span
-                      className={item.tipo === 'resposta' ? 'tempo-resposta' : 'tempo-espera'}
-                      style={{ width: `${Math.max(8, (item.horas / maior) * 100)}%` }}
-                    />
+        <div className="fila-ferramentas">
+          <div className="fila-filtros" role="group" aria-label="Filtrar chamados">
+            {FILTROS.map((opcao) => (
+              <button
+                key={opcao.id}
+                type="button"
+                aria-pressed={filtro === opcao.id}
+                className={filtro === opcao.id ? 'fila-filtro ativo' : 'fila-filtro'}
+                onClick={() => setFiltro(opcao.id)}
+              >
+                {opcao.rotulo}
+                <span>{contagens[opcao.id]}</span>
+              </button>
+            ))}
+          </div>
+          <label className="busca fila-busca">
+            <span className="oculto">Buscar por chamado ou solicitante</span>
+            <span className="busca-icone" aria-hidden="true">⌕</span>
+            <input
+              className="entrada"
+              type="search"
+              placeholder="Buscar chamados"
+              value={busca}
+              onChange={(evento) => setBusca(evento.target.value)}
+            />
+          </label>
+        </div>
+
+        {erro ? <p className="banner" role="alert">{erro}</p> : null}
+        {chamadosFiltrados.length === 0 ? (
+          <EstadoVazio
+            titulo="Nenhum chamado encontrado"
+            texto={termo ? 'Tente outro termo ou escolha um filtro diferente.' : 'Não há chamados nesta fila por enquanto.'}
+          />
+        ) : (
+          <div className="fila-lista">
+            {chamadosFiltrados.map((chamado) => (
+              <article className="fila-item" key={chamado.id}>
+                <div className="fila-conteudo">
+                  <div className="fila-titulo-linha">
+                    <h3>{chamado.titulo}</h3>
+                    <span className="fila-status">{chamado.status}</span>
                   </div>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {semMarco > 0 ? (
-            <p className="grafico-nota">
-              {semMarco === 1
-                ? '1 chamado atribuído antes desta medição não entra na média.'
-                : `${semMarco} chamados atribuídos antes desta medição não entram na média.`}
-              {' '}Os próximos passam a contar.
-            </p>
-          ) : null}
-          <div className="grafico-legenda">
-            <span><i className="ponto ponto-grafico-atribuido" />Tempo até assumir</span>
-            <span><i className="ponto ponto-grafico-livre" />Ainda sem atribuição</span>
+                  <p className="fila-descricao">{chamado.descricao}</p>
+                  <div className="fila-metadados">
+                    <span className="solicitante-avatar" aria-hidden="true">{iniciais(chamado.autorNome)}</span>
+                    <span>{chamado.autorNome || 'Solicitante'}</span>
+                    <span className="metadado-separador" aria-hidden="true">·</span>
+                    <time dateTime={chamado.criadoEm}>{formatarData(chamado.criadoEm)}</time>
+                  </div>
+                </div>
+                <div className="fila-responsavel">
+                  <span className={chamado.responsavelId ? 'responsavel-texto' : 'responsavel-texto sem-responsavel'}>
+                    {responsavelDoChamado(chamado)}
+                  </span>
+                  {!chamado.responsavelId ? (
+                    <Botao type="button" onClick={() => assumir(chamado.id)}>Assumir</Botao>
+                  ) : null}
+                </div>
+              </article>
+            ))}
           </div>
-        </article>
+        )}
       </section>
-
-      <section className="painel-colunas" aria-label="Fila em detalhe">
-        <article className="grafico-cartao">
-          <div className="grafico-topo">
-            <div>
-              <span className="sobretitulo">AGUARDANDO</span>
-              <h2>Sem atribuição</h2>
-            </div>
-            <span className="fila-contagem">{livres.length}</span>
-          </div>
-          {livres.length === 0 ? (
-            <p className="grafico-vazio">Nenhum chamado esperando responsável.</p>
-          ) : (
-            <ul className="painel-lista">
-              {livres.map((chamado) => {
-                const espera = tempos.find((item) => item.id === chamado.id)
-                return (
-                  <li key={chamado.id}>
-                    <Link to="/chamados">
-                      <strong>{chamado.titulo}</strong>
-                      <span>{chamado.autorNome}</span>
-                    </Link>
-                    <em>{espera ? formatarDuracao(espera.horas) : '—'}</em>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </article>
-
-        <article className="grafico-cartao">
-          <div className="grafico-topo">
-            <div>
-              <span className="sobretitulo">SUA FILA</span>
-              <h2>Com você</h2>
-            </div>
-            <span className="fila-contagem fila-contagem-azul">{meus.length}</span>
-          </div>
-          {meus.length === 0 ? (
-            <p className="grafico-vazio">Você ainda não assumiu nenhum chamado.</p>
-          ) : (
-            <ul className="painel-lista">
-              {meus.map((chamado) => (
-                <li key={chamado.id}>
-                  <Link to={`/chamados/${chamado.id}`}>
-                    <strong>{chamado.titulo}</strong>
-                    <span>{chamado.autorNome}</span>
-                  </Link>
-                  <em>Abrir conversa</em>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
-      </section>
-    </>
+    </div>
   )
 }

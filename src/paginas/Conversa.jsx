@@ -52,23 +52,24 @@ export function Conversa() {
   return (
     <section className="conversa">
       <div className="conversa-painel">
-      <header className="conversa-cabecalho">
-        <Botao para={voltar} variante="texto">
-          ← {usuario.papel === 'responsavel' ? 'Visão geral' : 'Chamados'}
-        </Botao>
-        <div className="conversa-titulo">
-          <h1>{chamado.titulo}</h1>
-          <p>{chamado.descricao}</p>
-        </div>
-        <div className="conversa-lado">
-          <span className={`selo selo-${chamado.status.toLowerCase()}`}>{chamado.status}</span>
-          <p>
-            {chamado.autorNome}
-            {' · '}
-            {chamado.responsavelNome || 'Sem responsável'}
-          </p>
-        </div>
-      </header>
+        <header className="conversa-cabecalho">
+          <Botao para={voltar} variante="texto">
+            ← {usuario.papel === 'responsavel' ? 'Visão geral' : 'Chamados'}
+          </Botao>
+          <div className="conversa-titulo">
+            <span className="sobretitulo">CONVERSA DO CHAMADO</span>
+            <h1>{chamado.titulo}</h1>
+            <p>{chamado.descricao}</p>
+          </div>
+          <div className="conversa-lado">
+            <span className={`selo selo-${chamado.status.toLowerCase()}`}>{chamado.status}</span>
+            <p>
+              {chamado.autorNome}
+              {' · '}
+              {chamado.responsavelNome || 'Sem responsável'}
+            </p>
+          </div>
+        </header>
         <div className="mensagens" aria-live="polite">
           {mensagens.length === 0 ? (
             <p className="mensagens-vazias">Nenhuma mensagem ainda. Escreva a primeira para começar o atendimento.</p>

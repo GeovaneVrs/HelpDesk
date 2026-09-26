@@ -3,6 +3,7 @@ import { Layout } from './componentes/Layout'
 import { RotaProtegida } from './componentes/RotaProtegida'
 import { useSessao } from './contexto/Sessao'
 import { Cadastrar } from './paginas/Cadastrar'
+import { BaseConhecimento } from './paginas/BaseConhecimento'
 import { PaginaChamados } from './paginas/Chamados'
 import { Conversa } from './paginas/Conversa'
 import { Entrar } from './paginas/Entrar'
@@ -19,7 +20,7 @@ import { Painel } from './paginas/Painel'
   /chamados/novo    abrir chamado, só solicitante
   /chamados/:id     conversa de quem abriu ou de quem assumiu
   /painel           só para o responsável
-  /conhecimento     ainda em desenvolvimento
+  /conhecimento     artigos de ajuda com busca e categorias
   /relatorios       ainda em desenvolvimento, só responsável
   /equipe           ainda em desenvolvimento, só responsável
   /solicitantes     ainda em desenvolvimento, só responsável
@@ -49,7 +50,7 @@ export default function App() {
             <Route path="/chamados/novo" element={<NovoChamado />} />
           </Route>
           <Route path="/chamados/:id" element={<Conversa />} />
-          <Route path="/conhecimento" element={<EmDesenvolvimento titulo="Base de conhecimento" texto="Artigos e respostas prontas para a equipe e para quem abre chamado." />} />
+          <Route path="/conhecimento" element={<BaseConhecimento />} />
           <Route path="/configuracoes" element={<EmDesenvolvimento titulo="Configurações" texto="Preferências da conta e do atendimento entram nesta tela." />} />
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />

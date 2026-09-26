@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BookOpen,
   ChartColumn,
@@ -6,7 +6,9 @@ import {
   ContactRound,
   LayoutDashboard,
   LogOut,
+  Moon,
   Settings,
+  Sun,
   Ticket,
   Users,
 } from 'lucide-react'
@@ -45,6 +47,16 @@ export function Layout() {
   const { pathname } = useLocation()
   const inicio = usuario.papel === 'responsavel' ? '/painel' : '/chamados'
   const papel = usuario.papel === 'responsavel' ? 'Equipe de suporte' : 'Solicitante'
+  const [escuro, setEscuro] = useState(() => document.documentElement.dataset.tema === 'escuro')
+
+  function alternarTema() {
+    setEscuro((atual) => {
+      const proximo = !atual
+      document.documentElement.dataset.tema = proximo ? 'escuro' : 'claro'
+      localStorage.setItem('helpdesk.tema', proximo ? 'escuro' : 'claro')
+      return proximo
+    })
+  }
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -74,6 +86,15 @@ export function Layout() {
         </nav>
 
         <div className="lateral-perfil">
+          <button
+            type="button"
+            className="nav-link"
+            aria-label={escuro ? 'Usar tema claro' : 'Usar tema escuro'}
+            onClick={alternarTema}
+          >
+            {escuro ? <Sun {...icone} /> : <Moon {...icone} />}
+            <Dica rotulo={escuro ? 'Tema claro' : 'Tema escuro'} texto={escuro ? 'Volta para o fundo branco.' : 'Troca o branco por preto.'} />
+          </button>
           <span className="nav-link nav-perfil" tabIndex={0} aria-label={`${usuario.nome}. ${papel}`}>
             <span className="avatar">{iniciais(usuario.nome)}</span>
             <Dica rotulo={usuario.nome} texto={papel} />

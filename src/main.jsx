@@ -8,6 +8,10 @@ import './estilos/global.css'
 
 prepararDados()
 
+if (localStorage.getItem('helpdesk.tema') === 'escuro') {
+  document.documentElement.dataset.tema = 'escuro'
+}
+
 createRoot(document.getElementById('raiz')).render(
   <StrictMode>
     <BrowserRouter>

@@ -85,7 +85,7 @@ export function Painel() {
           <h2>Chamados da fila</h2>
           <div className="donut-corpo">
             <svg className="donut" viewBox="0 0 160 160" role="img" aria-label={`${atribuidos.length} atribuídos e ${livres.length} sem atribuição`}>
-              <circle cx="80" cy="80" r="58" fill="none" stroke="#f3e7d4" strokeWidth="16" />
+              <circle cx="80" cy="80" r="58" fill="none" stroke="var(--track-donut)" strokeWidth="16" />
               {total > 0 ? (
                 <circle
                   className="donut-arco"

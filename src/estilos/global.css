@@ -1072,3 +1072,8 @@ html[data-tema="escuro"] .conhecimento-ajuda p {
     padding: 15px;
   }
 }
+
+/* Relatórios no celular: a legenda da rosca ocupa a largura toda */
+@media (max-width: 720px) {
+  .donut-corpo .donut-lista { width: 100%; }
+}

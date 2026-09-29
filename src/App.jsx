@@ -10,6 +10,7 @@ import { Entrar } from './paginas/Entrar'
 import { EmDesenvolvimento } from './paginas/EmDesenvolvimento'
 import { NovoChamado } from './paginas/NovoChamado'
 import { Painel } from './paginas/Painel'
+import { Configuracoes } from './paginas/Configuracoes'
 
 /*
   Mapa das telas
@@ -51,7 +52,7 @@ export default function App() {
           </Route>
           <Route path="/chamados/:id" element={<Conversa />} />
           <Route path="/conhecimento" element={<BaseConhecimento />} />
-          <Route path="/configuracoes" element={<EmDesenvolvimento titulo="Configurações" texto="Preferências da conta e do atendimento entram nesta tela." />} />
+          <Route path="/configuracoes" element={<Configuracoes />} />
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />
             <Route path="/relatorios" element={<EmDesenvolvimento titulo="Relatórios" texto="Volume, tempo de resposta e fila por período." />} />

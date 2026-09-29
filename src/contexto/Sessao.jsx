@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react'
-import { cadastrar, encerrarSessao, entrar, obterSessao } from '../servicos/usuarios'
+import { atualizarPerfil, cadastrar, encerrarSessao, entrar, obterSessao } from '../servicos/usuarios'
 
 const SessaoContexto = createContext(null)
 
@@ -22,6 +22,13 @@ export function ProvedorSessao({ children }) {
     return resultado
   }
 
+    function atualizarPerfilNaSessao(dados) {
+    const resultado = atualizarPerfil(usuario.id, dados)
+
+    if (resultado.ok) setUsuario(resultado.usuario)
+      return resultado;
+  }
+
   function sair() {
     encerrarSessao()
     setUsuario(null)
@@ -31,6 +38,7 @@ export function ProvedorSessao({ children }) {
     usuario,
     entrar: entrarNaSessao,
     cadastrar: cadastrarNaSessao,
+    atualizarPerfil: atualizarPerfilNaSessao,
     sair,
   }
 

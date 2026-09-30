@@ -11,6 +11,7 @@ import { EmDesenvolvimento } from './paginas/EmDesenvolvimento'
 import { NovoChamado } from './paginas/NovoChamado'
 import { Painel } from './paginas/Painel'
 import { Configuracoes } from './paginas/Configuracoes'
+import { Equipe } from './paginas/Equipe'
 
 /*
   Mapa das telas
@@ -56,7 +57,7 @@ export default function App() {
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />
             <Route path="/relatorios" element={<EmDesenvolvimento titulo="Relatórios" texto="Volume, tempo de resposta e fila por período." />} />
-            <Route path="/equipe" element={<EmDesenvolvimento titulo="Equipe" texto="Quem atende, a carga de cada pessoa e os chamados em aberto." />} />
+            <Route path="/equipe" element={<Equipe />} />
             <Route path="/solicitantes" element={<EmDesenvolvimento titulo="Solicitantes" texto="As pessoas que abrem chamado e o histórico de cada uma." />} />
           </Route>
         </Route>

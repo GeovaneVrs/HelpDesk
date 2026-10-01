@@ -1316,6 +1316,241 @@ html[data-tema="escuro"] .configuracoes-opcao.ativa .configuracoes-opcao-icone {
 html[data-tema="escuro"] .entrada[readonly] { background: rgba(7, 17, 29, .35); border-color: rgba(186, 208, 245, .08); color: var(--muted); }
 html[data-tema="escuro"] .config-trava { color: var(--muted); }
 
+/* Equipe */
+
+.equipe-resumo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.equipe-resumo-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 100px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--surface);
+  box-shadow: 0 2px 4px rgba(24,34,48,.018);
+}
+
+.equipe-resumo-icone {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 11px;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.equipe-resumo-card div:last-child {
+  display: grid;
+  gap: 1px;
+}
+
+.equipe-resumo-card span {
+  color: #69768a;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.equipe-resumo-card strong {
+  color: var(--ink);
+  font-size: 27px;
+  font-weight: 720;
+  letter-spacing: -.04em;
+}
+
+.equipe-secao {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.equipe-secao .secao-cabecalho {
+  margin-bottom: 18px;
+}
+
+.equipe-secao h2 {
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+}
+
+.equipe-secao .subtitulo {
+  margin-top: 5px;
+}
+
+.equipe-secao .ferramentas {
+  padding-top: 15px;
+  border-top: 1px solid #f0f2f6;
+}
+
+.equipe-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.membro-card {
+  padding: 18px;
+  border: 1px solid #edf0f4;
+  border-radius: 13px;
+  background: #fff;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.membro-card:hover {
+  border-color: #dce4f3;
+  box-shadow: 0 5px 18px rgba(32,47,73,.05);
+}
+
+.membro-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.membro-avatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 13px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.membro-identidade {
+  min-width: 0;
+  flex: 1;
+}
+
+.membro-identidade h3 {
+  overflow: hidden;
+  color: #243147;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.membro-identidade span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #8b96a6;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.membro-status {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.membro-metricas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.membro-metricas div {
+  padding: 11px;
+  border-radius: 9px;
+  background: var(--surface-muted);
+}
+
+.membro-metricas span {
+  display: block;
+  color: #8994a4;
+  font-size: 10px;
+}
+
+.membro-metricas strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 720;
+}
+
+.membro-carga {
+  margin-top: 16px;
+}
+
+.membro-carga-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.membro-carga-topo span {
+  color: #7d8999;
+  font-size: 10px;
+}
+
+.membro-carga-topo strong {
+  color: #516178;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.membro-carga-trilho {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #f0f2f6;
+}
+
+.membro-carga-trilho span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3d74ea, #6f97f6);
+  transition: width .25s ease;
+}
+
+@media (max-width: 720px) {
+  .equipe-resumo {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .equipe-secao {
+    padding: 15px 12px;
+  }
+
+  .equipe-lista {
+    grid-template-columns: 1fr;
+  }
+
+  .membro-cabecalho {
+    align-items: flex-start;
+  }
+}
+
 /* Relatórios no celular: a legenda da rosca ocupa a largura toda */
 @media (max-width: 720px) {
   .donut-corpo .donut-lista { width: 100%; }

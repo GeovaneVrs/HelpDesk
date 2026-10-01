@@ -7,10 +7,10 @@ import { BaseConhecimento } from './paginas/BaseConhecimento'
 import { PaginaChamados } from './paginas/Chamados'
 import { Conversa } from './paginas/Conversa'
 import { Entrar } from './paginas/Entrar'
-import { EmDesenvolvimento } from './paginas/EmDesenvolvimento'
 import { NovoChamado } from './paginas/NovoChamado'
 import { Painel } from './paginas/Painel'
 import { Configuracoes } from './paginas/Configuracoes'
+import { Equipe } from './paginas/Equipe'
 import { Relatorios } from './paginas/Relatorios'
 import { Solicitantes } from './paginas/Solicitantes'
 
@@ -25,7 +25,7 @@ import { Solicitantes } from './paginas/Solicitantes'
   /painel           só para o responsável
   /conhecimento     artigos de ajuda com busca e categorias
   /relatorios       área dos responsáveis / gráfico ilustrativo dos chamados
-  /equipe           ainda em desenvolvimento, só responsável
+  /equipe           área dos responsáveis / carga de atendimento
   /solicitantes     área dos responsáveis / pessoas que abrem chamados
   /configuracoes    dados da conta e preferências
 */
@@ -58,7 +58,7 @@ export default function App() {
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />
             <Route path="/relatorios" element={<Relatorios titulo="Relatórios" />} />
-            <Route path="/equipe" element={<EmDesenvolvimento titulo="Equipe" texto="Quem atende, a carga de cada pessoa e os chamados em aberto." />} />
+            <Route path="/equipe" element={<Equipe />} />
             <Route path="/solicitantes" element={<Solicitantes />} />
           </Route>
         </Route>

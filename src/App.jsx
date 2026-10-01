@@ -11,6 +11,8 @@ import { EmDesenvolvimento } from './paginas/EmDesenvolvimento'
 import { NovoChamado } from './paginas/NovoChamado'
 import { Painel } from './paginas/Painel'
 import { Configuracoes } from './paginas/Configuracoes'
+import { Relatorios } from './paginas/Relatorios'
+import { Solicitantes } from './paginas/Solicitantes'
 
 /*
   Mapa das telas
@@ -22,10 +24,10 @@ import { Configuracoes } from './paginas/Configuracoes'
   /chamados/:id     conversa de quem abriu ou de quem assumiu
   /painel           só para o responsável
   /conhecimento     artigos de ajuda com busca e categorias
-  /relatorios       ainda em desenvolvimento, só responsável
+  /relatorios       área dos responsáveis / gráfico ilustrativo dos chamados
   /equipe           ainda em desenvolvimento, só responsável
-  /solicitantes     ainda em desenvolvimento, só responsável
-  /configuracoes    ainda em desenvolvimento
+  /solicitantes     área dos responsáveis / pessoas que abrem chamados
+  /configuracoes    dados da conta e preferências
 */
 
 function Inicio() {
@@ -55,9 +57,9 @@ export default function App() {
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />
-            <Route path="/relatorios" element={<EmDesenvolvimento titulo="Relatórios" texto="Volume, tempo de resposta e fila por período." />} />
+            <Route path="/relatorios" element={<Relatorios titulo="Relatórios" />} />
             <Route path="/equipe" element={<EmDesenvolvimento titulo="Equipe" texto="Quem atende, a carga de cada pessoa e os chamados em aberto." />} />
-            <Route path="/solicitantes" element={<EmDesenvolvimento titulo="Solicitantes" texto="As pessoas que abrem chamado e o histórico de cada uma." />} />
+            <Route path="/solicitantes" element={<Solicitantes />} />
           </Route>
         </Route>
       </Route>

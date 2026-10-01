@@ -22,11 +22,10 @@ export function ProvedorSessao({ children }) {
     return resultado
   }
 
-    function atualizarPerfilNaSessao(dados) {
+  function atualizarPerfilNaSessao(dados) {
     const resultado = atualizarPerfil(usuario.id, dados)
-
     if (resultado.ok) setUsuario(resultado.usuario)
-      return resultado;
+    return resultado
   }
 
   function sair() {

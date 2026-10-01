@@ -41,3 +41,22 @@ export function detalhesDoChamado(chamado, usuarioId, mostrarAutor) {
   detalhes.push(textoResponsavel(chamado, usuarioId))
   return detalhes
 }
+
+// Transforma milissegundos em texto curto: "45 min", "1h 30min", "2d 4h".
+export function formatarDuracao(ms) {
+  if (ms === null || ms === undefined || Number.isNaN(ms)) return '—'
+
+  const minutos = Math.round(ms / 60000)
+  if (minutos < 1) return 'menos de 1 min'
+  if (minutos < 60) return `${minutos} min`
+
+  const horas = Math.floor(minutos / 60)
+  if (horas < 24) {
+    const restoMinutos = minutos % 60
+    return restoMinutos ? `${horas}h ${restoMinutos}min` : `${horas}h`
+  }
+
+  const dias = Math.floor(horas / 24)
+  const restoHoras = horas % 24
+  return restoHoras ? `${dias}d ${restoHoras}h` : `${dias}d`
+}

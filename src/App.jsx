@@ -10,6 +10,7 @@ import { Entrar } from './paginas/Entrar'
 import { EmDesenvolvimento } from './paginas/EmDesenvolvimento'
 import { NovoChamado } from './paginas/NovoChamado'
 import { Painel } from './paginas/Painel'
+import { Configuracoes } from './paginas/Configuracoes'
 import { Relatorios } from './paginas/Relatorios'
 import { Solicitantes } from './paginas/Solicitantes'
 
@@ -25,8 +26,8 @@ import { Solicitantes } from './paginas/Solicitantes'
   /conhecimento     artigos de ajuda com busca e categorias
   /relatorios       área dos responsáveis / gráfico ilustrativo dos chamados
   /equipe           ainda em desenvolvimento, só responsável
-  /solicitantes     ainda em desenvolvimento, só responsável
-  /configuracoes    ainda em desenvolvimento
+  /solicitantes     área dos responsáveis / pessoas que abrem chamados
+  /configuracoes    dados da conta e preferências
 */
 
 function Inicio() {
@@ -53,7 +54,7 @@ export default function App() {
           </Route>
           <Route path="/chamados/:id" element={<Conversa />} />
           <Route path="/conhecimento" element={<BaseConhecimento />} />
-          <Route path="/configuracoes" element={<EmDesenvolvimento titulo="Configurações" texto="Preferências da conta e do atendimento entram nesta tela." />} />
+          <Route path="/configuracoes" element={<Configuracoes />} />
           <Route element={<RotaProtegida papel="responsavel" />}>
             <Route path="/painel" element={<Painel />} />
             <Route path="/relatorios" element={<Relatorios titulo="Relatórios" />} />

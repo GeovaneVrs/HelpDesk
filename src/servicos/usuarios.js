@@ -98,7 +98,6 @@ export function encerrarSessao() {
   apagar(CHAVES.sessao)
 }
 
-
 // O papel serve para filtrar por "solicitante" ou "responsável"
 export function listarUsuarios(papel) {
   return lerLista(CHAVES.usuarios)
@@ -110,4 +109,51 @@ export function listarUsuarios(papel) {
     )
     .map((usuario) => ({ ...semSenha(usuario), criadoEm: usuario.criadoEm }))
     .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+}
+
+/*
+  Atualiza nome e e-mail de quem está logado.
+  O nome também aparece copiado dentro de chamados e mensagens
+  (autorNome, responsavelNome). Por isso atualizamos as cópias aqui,
+  senão os chamados antigos continuariam com o nome velho.
+*/
+// Só nome e e-mail são lidos dos dados recebidos. Mesmo que alguém envie
+// cargo, departamento ou papel, esses campos são ignorados: quem define
+// isso é a administração, não o próprio usuário.
+export function atualizarPerfil(id, { nome, email }) {
+  const usuarios = lerLista(CHAVES.usuarios)
+  const atual = usuarios.find((usuario) => usuario.id === id)
+  if (!atual) return { ok: false, erros: { geral: 'Conta não encontrada. Entre novamente.' } }
+
+  const nomeLimpo = nome.trim()
+  const emailLimpo = email.trim().toLowerCase()
+  const erros = {}
+
+  if (nomeLimpo.length < 3) erros.nome = 'Informe seu nome completo.'
+  if (nomeLimpo.length > 80) erros.nome = 'Use um nome com até 80 letras.'
+
+  const donoDoEmail = buscarPorEmail(emailLimpo)
+  if (!emailValido(emailLimpo)) erros.email = 'Informe um e-mail válido.'
+  else if (donoDoEmail && donoDoEmail.id !== id) erros.email = 'Este e-mail já está em uso por outra conta.'
+
+  if (Object.keys(erros).length > 0) return { ok: false, erros }
+
+  const atualizado = { ...atual, nome: nomeLimpo, email: emailLimpo }
+  gravarLista(CHAVES.usuarios, usuarios.map((usuario) => (usuario.id === id ? atualizado : usuario)))
+
+  if (nomeLimpo !== atual.nome) {
+    const chamados = lerLista(CHAVES.chamados).map((chamado) => ({
+      ...chamado,
+      autorNome: chamado.autorId === id ? nomeLimpo : chamado.autorNome,
+      responsavelNome: chamado.responsavelId === id ? nomeLimpo : chamado.responsavelNome,
+    }))
+    gravarLista(CHAVES.chamados, chamados)
+
+    const mensagens = lerLista(CHAVES.mensagens).map((mensagem) =>
+      mensagem.autorId === id ? { ...mensagem, autorNome: nomeLimpo } : mensagem,
+    )
+    gravarLista(CHAVES.mensagens, mensagens)
+  }
+
+  return { ok: true, usuario: semSenha(atualizado) }
 }

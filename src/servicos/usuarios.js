@@ -97,3 +97,17 @@ export function obterSessao() {
 export function encerrarSessao() {
   apagar(CHAVES.sessao)
 }
+
+
+// O papel serve para filtrar por "solicitante" ou "responsável"
+export function listarUsuarios(papel) {
+  return lerLista(CHAVES.usuarios)
+    .filter((usuario) =>
+      usuario &&
+      typeof usuario.id === 'string' &&
+      typeof usuario.nome === 'string' &&
+      (!papel || usuario.papel === papel),
+    )
+    .map((usuario) => ({ ...semSenha(usuario), criadoEm: usuario.criadoEm }))
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+}

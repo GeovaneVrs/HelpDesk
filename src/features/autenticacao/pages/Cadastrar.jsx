@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Botao } from '../componentes/Botao'
-import { CampoTexto } from '../componentes/CampoTexto'
-import { Marca } from '../componentes/Marca'
-import { useSessao } from '../contexto/Sessao'
-import { useTitulo } from '../uteis/useTitulo'
+import { Botao } from '../../../components/ui/Botao'
+import { CampoTexto } from '../../../components/ui/CampoTexto'
+import { Marca } from '../../../components/ui/Marca'
+import { useSessao } from '../../../contexto/Sessao'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 export function Cadastrar() {
   const { usuario, cadastrar } = useSessao()

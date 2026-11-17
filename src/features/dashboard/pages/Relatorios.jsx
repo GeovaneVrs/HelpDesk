@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { CircleCheck, Clock, Ticket } from 'lucide-react'
-import { GraficoRosca } from '../componentes/GraficoRosca'
-import { GraficoTempo } from '../componentes/GraficoTempo'
-import { gerarRelatorio } from '../servicos/relatorios'
-import { formatarDuracao } from '../uteis/texto'
-import { useTitulo } from '../uteis/useTitulo'
+import { GraficoRosca } from '../components/GraficoRosca'
+import { GraficoTempo } from '../components/GraficoTempo'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { gerarRelatorio } from '../../../servicos/relatorios'
+import { formatarDuracao } from '../../../utils/texto'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 const PERIODOS = [
   { id: '7', rotulo: '7 dias', dias: 7 },

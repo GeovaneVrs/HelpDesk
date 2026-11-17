@@ -1,4 +1,4 @@
-import { useTitulo } from '../uteis/useTitulo'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 export function EmDesenvolvimento({ titulo, texto }) {
   useTitulo(titulo)

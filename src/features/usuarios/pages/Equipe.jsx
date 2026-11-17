@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Mail, Ticket, Users } from 'lucide-react'
-import { EstadoVazio } from '../componentes/EstadoVazio'
-import { lerLista } from '../dados/armazenamento'
-import { CHAVES } from '../dados/armazenamento'
-import { listarChamados } from '../servicos/chamados'
-import { useTitulo } from '../uteis/useTitulo'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { lerLista } from '../../../dados/armazenamento'
+import { CHAVES } from '../../../dados/armazenamento'
+import { listarChamados } from '../../../servicos/chamados'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 function iniciais(nome) {
   return nome

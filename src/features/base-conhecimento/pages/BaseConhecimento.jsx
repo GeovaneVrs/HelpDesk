@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import { BookOpen, CircleHelp, Mail, Monitor, Printer, Wifi } from 'lucide-react'
-import { Botao } from '../componentes/Botao'
-import { EstadoVazio } from '../componentes/EstadoVazio'
-import { useSessao } from '../contexto/Sessao'
-import { useTitulo } from '../uteis/useTitulo'
+import { Botao } from '../../../components/ui/Botao'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useSessao } from '../../../contexto/Sessao'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 const ARTIGOS = [
   {

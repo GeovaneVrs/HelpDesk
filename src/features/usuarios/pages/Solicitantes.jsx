@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Clock, Ticket, UsersRound } from 'lucide-react'
-import { CartaoPessoa } from '../componentes/CartaoPessoa'
-import { EstadoVazio } from '../componentes/EstadoVazio'
-import { HistoricoChamados } from '../componentes/HistoricoChamados'
-import { useSessao } from '../contexto/Sessao'
-import { listarSolicitantes } from '../servicos/pessoas'
-import { formatarData } from '../uteis/texto'
-import { useTitulo } from '../uteis/useTitulo'
+import { HistoricoChamados } from '../../chamados/components/HistoricoChamados'
+import { CartaoPessoa } from '../components/CartaoPessoa'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useSessao } from '../../../contexto/Sessao'
+import { listarSolicitantes } from '../../../servicos/pessoas'
+import { formatarData } from '../../../utils/texto'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 const FILTROS = [
   { id: 'todos', rotulo: 'Todos' },

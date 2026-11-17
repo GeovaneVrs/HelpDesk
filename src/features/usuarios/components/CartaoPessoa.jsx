@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { iniciais } from '../uteis/texto'
+import { iniciais } from '../../../utils/texto'
 
 export function CartaoPessoa({ nome, email, destaque, numeros = [], extra, children }) {
   const [aberto, setAberto] = useState(false)

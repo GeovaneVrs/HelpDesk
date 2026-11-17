@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ProvedorSessao } from './contexto/Sessao'
 import { prepararDados } from './dados/armazenamento'
 import App from './App'
-import './estilos/global.css'
+import './styles/global.css'
 
 prepararDados()
 

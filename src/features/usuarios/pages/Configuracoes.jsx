@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Lock } from 'lucide-react'
-import { Botao } from '../componentes/Botao'
-import { CampoTexto } from '../componentes/CampoTexto'
-import { useSessao } from '../contexto/Sessao'
-import { useTitulo } from '../uteis/useTitulo'
+import { Botao } from '../../../components/ui/Botao'
+import { CampoTexto } from '../../../components/ui/CampoTexto'
+import { useSessao } from '../../../contexto/Sessao'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 
 export function Configuracoes() {

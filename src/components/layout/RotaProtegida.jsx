@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
-import { useSessao } from '../contexto/Sessao'
+import { useSessao } from '../../contexto/Sessao'
 
 /*
   Sem a prop papel, exige apenas login.

@@ -1,4 +1,4 @@
-import { formatarDuracao } from '../uteis/texto'
+import { formatarDuracao } from '../../../utils/texto'
 
 /*
   Barras horizontais de tempo.

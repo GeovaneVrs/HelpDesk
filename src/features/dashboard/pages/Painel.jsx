@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Botao } from '../componentes/Botao'
-import { EstadoVazio } from '../componentes/EstadoVazio'
-import { useSessao } from '../contexto/Sessao'
-import { assumirChamado, listarChamados } from '../servicos/chamados'
-import { formatarData, iniciais } from '../uteis/texto'
-import { useTitulo } from '../uteis/useTitulo'
+import { Botao } from '../../../components/ui/Botao'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useSessao } from '../../../contexto/Sessao'
+import { assumirChamado, listarChamados } from '../../../servicos/chamados'
+import { formatarData, iniciais } from '../../../utils/texto'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 const FILTROS = [
   { id: 'todos', rotulo: 'Todos' },

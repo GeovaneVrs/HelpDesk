@@ -13,9 +13,9 @@ import {
   Users,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useSessao } from '../contexto/Sessao'
-import { iniciais } from '../uteis/texto'
-import { Marca } from './Marca'
+import { useSessao } from '../../contexto/Sessao'
+import { iniciais } from '../../utils/texto'
+import { Marca } from '../ui/Marca'
 
 const icone = { size: 18, strokeWidth: 1.75, className: 'nav-icone', 'aria-hidden': true }
 

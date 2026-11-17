@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Botao } from '../componentes/Botao'
-import { EstadoVazio } from '../componentes/EstadoVazio'
-import { useSessao } from '../contexto/Sessao'
-import { obterChamado, podeConversar } from '../servicos/chamados'
-import { enviarMensagem, listarMensagens } from '../servicos/mensagens'
-import { formatarData, iniciais } from '../uteis/texto'
-import { useTitulo } from '../uteis/useTitulo'
+import { Botao } from '../../../components/ui/Botao'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useSessao } from '../../../contexto/Sessao'
+import { obterChamado, podeConversar } from '../../../servicos/chamados'
+import { enviarMensagem, listarMensagens } from '../../../servicos/mensagens'
+import { formatarData, iniciais } from '../../../utils/texto'
+import { useTitulo } from '../../../hooks/useTitulo'
 
 export function Conversa() {
   const { id } = useParams()

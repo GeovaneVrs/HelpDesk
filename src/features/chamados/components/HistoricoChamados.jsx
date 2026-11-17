@@ -1,6 +1,6 @@
-import { podeConversar } from '../servicos/chamados'
-import { formatarData, textoResponsavel } from '../uteis/texto'
-import { Botao } from './Botao'
+import { podeConversar } from '../../../servicos/chamados'
+import { formatarData, textoResponsavel } from '../../../utils/texto'
+import { Botao } from '../../../components/ui/Botao'
 
 export function HistoricoChamados({ chamados, usuario, mostrar = 'responsavel', vazio }) {
   if (chamados.length === 0) {

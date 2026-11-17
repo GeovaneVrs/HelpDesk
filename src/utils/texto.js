@@ -31,17 +31,6 @@ export function textoResponsavel(chamado, usuarioId) {
   return `Responsável: ${chamado.responsavelNome}`
 }
 
-export function detalhesDoChamado(chamado, usuarioId, mostrarAutor) {
-  const detalhes = [formatarData(chamado.criadoEm)]
-
-  if (mostrarAutor) {
-    detalhes.push(`Aberto por ${chamado.autorNome}`)
-  }
-
-  detalhes.push(textoResponsavel(chamado, usuarioId))
-  return detalhes
-}
-
 // Transforma milissegundos em texto curto: "45 min", "1h 30min", "2d 4h".
 export function formatarDuracao(ms) {
   if (ms === null || ms === undefined || Number.isNaN(ms)) return '—'

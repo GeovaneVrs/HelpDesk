@@ -1,64 +1,23 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Mail, Ticket, Users } from 'lucide-react'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { lerLista } from '../../../dados/armazenamento'
-import { CHAVES } from '../../../dados/armazenamento'
-import { listarChamados } from '../../../servicos/chamados'
 import { useTitulo } from '../../../hooks/useTitulo'
-
-function iniciais(nome) {
-  return nome
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((parte) => parte[0])
-    .join('')
-    .toUpperCase()
-}
+import { iniciais } from '../../../utils/texto'
 
 export function Equipe() {
   useTitulo('Equipe')
 
   const [busca, setBusca] = useState('')
 
-  const usuarios = lerLista(CHAVES.usuarios)
-  const chamados = listarChamados()
-
-  const equipe = usuarios.filter(
-    (usuario) => usuario.papel === 'responsavel',
-  )
-
-  const equipeComDados = useMemo(() => {
-    return equipe.map((membro) => {
-      const chamadosDoMembro = chamados.filter(
-        (chamado) => chamado.responsavelId === membro.id,
-      )
-
-      const chamadosAbertos = chamadosDoMembro.filter(
-        (chamado) => chamado.status === 'Aberto',
-      )
-
-      return {
-        ...membro,
-        totalChamados: chamadosDoMembro.length,
-        chamadosAbertos: chamadosAbertos.length,
-      }
-    })
-  }, [usuarios, chamados])
+  const equipe = []
 
   const termo = busca.trim().toLowerCase()
 
-  const membrosVisiveis = equipeComDados.filter((membro) =>
+  const membrosVisiveis = equipe.filter((membro) =>
     `${membro.nome} ${membro.email}`
       .toLowerCase()
       .includes(termo),
   )
-
-  const totalMembros = equipe.length
-
-  const totalChamados = chamados.filter(
-    (chamado) => chamado.responsavelId,
-  ).length
 
   return (
     <>
@@ -82,7 +41,7 @@ export function Equipe() {
 
           <div>
             <span>MEMBROS</span>
-            <strong>{totalMembros}</strong>
+            <strong>—</strong>
           </div>
         </article>
 
@@ -93,7 +52,7 @@ export function Equipe() {
 
           <div>
             <span>CHAMADOS ATRIBUÍDOS</span>
-            <strong>{totalChamados}</strong>
+            <strong>—</strong>
           </div>
         </article>
       </section>
@@ -132,9 +91,7 @@ export function Equipe() {
             />
           </label>
 
-          <span className="resultado-contagem">
-            {membrosVisiveis.length} membro(s)
-          </span>
+          <span className="resultado-contagem">Dados indisponíveis</span>
         </div>
 
         {membrosVisiveis.length === 0 ? (
@@ -142,8 +99,8 @@ export function Equipe() {
             titulo="Nenhum membro encontrado"
             texto={
               termo
-                ? 'Tente pesquisar por outro nome ou e-mail.'
-                : 'Ainda não existem usuários na equipe de suporte.'
+                ? 'A busca ficará disponível quando houver uma fonte de dados real.'
+              : 'Os dados da equipe não estão disponíveis nesta etapa.'
             }
           />
         ) : (

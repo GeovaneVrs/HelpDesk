@@ -1,10 +1,5 @@
 import { useState } from 'react'
-import { Botao } from '../../../components/ui/Botao'
-import { CartaoChamado } from '../components/CartaoChamado'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { useSessao } from '../../../contexto/Sessao'
-import { assumirChamado, listarChamados } from '../../../servicos/chamados'
-import { detalhesDoChamado } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 const FILTROS = [
@@ -14,38 +9,12 @@ const FILTROS = [
 ]
 
 export function Fila() {
-  const { usuario } = useSessao()
-  const [chamados, setChamados] = useState(() => listarChamados())
   const [filtro, setFiltro] = useState('todos')
   const [busca, setBusca] = useState('')
-  const [erro, setErro] = useState('')
 
   useTitulo('Chamados')
 
   const termo = busca.trim().toLowerCase()
-  const porFiltro = chamados.filter((chamado) => {
-    if (filtro === 'livres') return !chamado.responsavelId
-    if (filtro === 'meus') return chamado.responsavelId === usuario.id
-    return true
-  })
-  const visiveis = porFiltro.filter((chamado) =>
-    `${chamado.titulo} ${chamado.autorNome}`.toLowerCase().includes(termo),
-  )
-  const livres = chamados.filter((chamado) => !chamado.responsavelId).length
-
-  function assumir(id) {
-    const resultado = assumirChamado(id, usuario)
-    setChamados(listarChamados())
-    setErro(resultado.ok ? '' : resultado.erro)
-  }
-
-  const vazio = termo
-    ? 'Nenhum chamado corresponde à sua busca.'
-    : filtro === 'livres'
-      ? 'Todos os chamados já têm responsável.'
-      : filtro === 'meus'
-        ? 'Você ainda não assumiu nenhum chamado.'
-        : 'Quando alguém abrir um chamado, ele aparecerá aqui.'
 
   return (
     <>
@@ -76,7 +45,7 @@ export function Fila() {
                 onClick={() => setFiltro(opcao.id)}
               >
                 {opcao.rotulo}
-                {opcao.id === 'livres' ? <span className="filtro-contagem">{livres}</span> : null}
+                <span className="filtro-contagem">—</span>
               </button>
             ))}
           </div>
@@ -93,36 +62,10 @@ export function Fila() {
           </label>
         </div>
 
-        {erro ? <p className="banner" role="alert">{erro}</p> : null}
-        {visiveis.length === 0 ? (
-          <EstadoVazio titulo="Nenhum resultado" texto={vazio} />
-        ) : (
-          <div className="lista">
-            {visiveis.map((chamado) => (
-              <CartaoChamado
-                key={chamado.id}
-                titulo={chamado.titulo}
-                descricao={chamado.descricao}
-                status={chamado.status}
-                detalhes={detalhesDoChamado(chamado, usuario.id, true)}
-                acao={
-                  chamado.responsavelId === usuario.id ? (
-                    <div className="chamado-acoes">
-                      <span className="responsavel-atribuido">✓ Com você</span>
-                      <Botao para={`/chamados/${chamado.id}`}>Abrir conversa</Botao>
-                    </div>
-                  ) : chamado.responsavelId ? (
-                    <span className="responsavel-atribuido">✓ {chamado.responsavelNome}</span>
-                  ) : (
-                    <Botao type="button" onClick={() => assumir(chamado.id)}>
-                      Assumir chamado
-                    </Botao>
-                  )
-                }
-              />
-            ))}
-          </div>
-        )}
+        <EstadoVazio
+          titulo="Fila indisponível"
+          texto={termo ? 'Não há dados reais para corresponder à busca.' : 'Os chamados serão listados quando houver uma fonte de dados real.'}
+        />
       </section>
     </>
   )

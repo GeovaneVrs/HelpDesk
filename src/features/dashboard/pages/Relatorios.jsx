@@ -1,10 +1,5 @@
 import { useState } from 'react'
 import { CircleCheck, Clock, Ticket } from 'lucide-react'
-import { GraficoRosca } from '../components/GraficoRosca'
-import { GraficoTempo } from '../components/GraficoTempo'
-import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { gerarRelatorio } from '../../../servicos/relatorios'
-import { formatarDuracao } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 const PERIODOS = [
@@ -19,9 +14,7 @@ export function Relatorios() {
   useTitulo('Relatórios')
 
   const escolhido = PERIODOS.find((opcao) => opcao.id === periodo)
-  const relatorio = gerarRelatorio(escolhido.dias)
   const notaPeriodo = escolhido.dias ? `Nos últimos ${escolhido.dias} dias` : 'Desde o início'
-  const semTempos = relatorio.porResponsavel.length === 0 && relatorio.esperaAtual === null
 
   return (
     <>
@@ -51,24 +44,24 @@ export function Relatorios() {
           <span className="numero-icone" aria-hidden="true"><Ticket size={19} /></span>
           <div>
             <span className="numero-legenda">Total de chamados</span>
-            <strong>{relatorio.total}</strong>
-            <span className="numero-nota">{notaPeriodo}</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis · {notaPeriodo}</span>
           </div>
         </article>
         <article className="numero numero-meus">
           <span className="numero-icone" aria-hidden="true"><CircleCheck size={19} /></span>
           <div>
             <span className="numero-legenda">Com responsável</span>
-            <strong>{relatorio.atribuidos}</strong>
-            <span className="numero-nota">Já estão sendo atendidos</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
         <article className="numero numero-aberto">
           <span className="numero-icone" aria-hidden="true"><Clock size={19} /></span>
           <div>
             <span className="numero-legenda">Sem responsável</span>
-            <strong>{relatorio.semResponsavel}</strong>
-            <span className="numero-nota">Aguardando alguém assumir</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
       </section>
@@ -82,28 +75,9 @@ export function Relatorios() {
             </div>
           </div>
 
-          {relatorio.total === 0 ? (
-            <p className="grafico-vazio">
-              Nenhum chamado neste período. Escolha um período maior para ver o gráfico.
-            </p>
-          ) : (
-            <div className="donut-corpo">
-              <GraficoRosca
-                atribuidos={relatorio.atribuidos}
-                semResponsavel={relatorio.semResponsavel}
-              />
-              <ul className="donut-lista">
-                <li>
-                  <span><span className="ponto ponto-grafico-atribuido" />Com responsável</span>
-                  <strong>{relatorio.atribuidos}</strong>
-                </li>
-                <li>
-                  <span><span className="ponto ponto-grafico-livre" />Sem responsável</span>
-                  <strong>{relatorio.semResponsavel}</strong>
-                </li>
-              </ul>
-            </div>
-          )}
+          <p className="grafico-vazio">
+            Os gráficos serão exibidos quando houver dados reais de atendimento.
+          </p>
         </article>
 
         <article className="grafico-cartao">
@@ -112,24 +86,11 @@ export function Relatorios() {
               <span className="sobretitulo">TEMPO DE RESPOSTA</span>
               <h2>Até alguém assumir</h2>
             </div>
-            {relatorio.tempoMedio !== null ? (
-              <p className="tempo-media">
-                <strong>{formatarDuracao(relatorio.tempoMedio)}</strong>
-                <span>média da equipe</span>
-              </p>
-            ) : null}
           </div>
 
-          {semTempos ? (
-            <p className="grafico-vazio">
-              Nenhum chamado neste período. Os tempos aparecem quando houver chamados abertos ou assumidos.
-            </p>
-          ) : (
-            <GraficoTempo
-              porResponsavel={relatorio.porResponsavel}
-              esperaAtual={relatorio.esperaAtual}
-            />
-          )}
+          <p className="grafico-vazio">
+            Os tempos de resposta serão exibidos quando houver dados reais de atendimento.
+          </p>
         </article>
       </section>
     </>

@@ -1,30 +1,17 @@
 import { useState } from 'react'
 import { Botao } from '../../../components/ui/Botao'
-import { CartaoChamado } from '../components/CartaoChamado'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { useSessao } from '../../../contexto/Sessao'
-import { Fila } from './Fila'
-import { listarMeusChamados } from '../../../servicos/chamados'
-import { detalhesDoChamado } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 export function PaginaChamados() {
-  const { usuario } = useSessao()
-  return usuario.papel === 'responsavel' ? <Fila /> : <Chamados />
+  return <Chamados />
 }
 
 export function Chamados() {
-  const { usuario } = useSessao()
   const [busca, setBusca] = useState('')
-  const chamados = listarMeusChamados(usuario.id)
-
   useTitulo('Chamados')
 
   const termo = busca.trim().toLowerCase()
-  const visiveis = chamados.filter((chamado) => chamado.titulo.toLowerCase().includes(termo))
-  const aguardando = chamados.filter((chamado) => !chamado.responsavelId).length
-  const emAtendimento = chamados.length - aguardando
-
   return (
     <>
       <header className="cabecalho-pagina">
@@ -43,24 +30,24 @@ export function Chamados() {
           <span className="numero-icone" aria-hidden="true">▤</span>
           <div>
             <span className="numero-legenda">Total de solicitações</span>
-            <strong>{chamados.length}</strong>
-            <span className="numero-nota">Registradas por você</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
         <article className="numero numero-aberto">
           <span className="numero-icone" aria-hidden="true">◷</span>
           <div>
             <span className="numero-legenda">Aguardando equipe</span>
-            <strong>{aguardando}</strong>
-            <span className="numero-nota">Ainda sem responsável</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
         <article className="numero numero-meus">
           <span className="numero-icone" aria-hidden="true">✓</span>
           <div>
             <span className="numero-legenda">Em atendimento</span>
-            <strong>{emAtendimento}</strong>
-            <span className="numero-nota">Com responsável atribuído</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
       </section>
@@ -84,33 +71,18 @@ export function Chamados() {
               onChange={(evento) => setBusca(evento.target.value)}
             />
           </label>
-          <span className="resultado-contagem">{visiveis.length} {visiveis.length === 1 ? 'chamado' : 'chamados'}</span>
+          <span className="resultado-contagem">Dados indisponíveis</span>
         </div>
 
-        {visiveis.length === 0 ? (
-          <EstadoVazio
-            titulo={termo ? 'Nenhum chamado com esse título' : 'Você ainda não abriu chamados'}
-            texto={
-              termo
-                ? 'Tente outro termo ou limpe a busca.'
-                : 'Descreva o problema e acompanhe o atendimento por aqui.'
-            }
-            acao={termo ? null : <Botao para="/chamados/novo">Abrir o primeiro chamado</Botao>}
-          />
-        ) : (
-          <div className="lista">
-            {visiveis.map((chamado) => (
-              <CartaoChamado
-                key={chamado.id}
-                titulo={chamado.titulo}
-                descricao={chamado.descricao}
-                status={chamado.status}
-                detalhes={detalhesDoChamado(chamado, usuario.id, false)}
-                acao={<Botao para={`/chamados/${chamado.id}`}>Abrir conversa</Botao>}
-              />
-            ))}
-          </div>
-        )}
+        <EstadoVazio
+          titulo="Chamados indisponíveis"
+          texto={
+            termo
+              ? 'A busca ficará disponível quando houver uma fonte de dados real.'
+              : 'Os chamados voltarão a ser exibidos quando houver uma fonte de dados real.'
+          }
+          acao={termo ? null : <Botao para="/chamados/novo">Abrir o primeiro chamado</Botao>}
+        />
       </section>
     </>
   )

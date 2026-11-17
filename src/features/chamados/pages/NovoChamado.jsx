@@ -1,9 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Botao } from '../../../components/ui/Botao'
 import { CampoTexto } from '../../../components/ui/CampoTexto'
-import { useSessao } from '../../../contexto/Sessao'
-import { criarChamado } from '../../../servicos/chamados'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 const DICAS = [
@@ -13,8 +10,6 @@ const DICAS = [
 ]
 
 export function NovoChamado() {
-  const { usuario } = useSessao()
-  const navegar = useNavigate()
   const [titulo, setTitulo] = useState('')
   const [descricao, setDescricao] = useState('')
   const [erros, setErros] = useState({})
@@ -23,12 +18,10 @@ export function NovoChamado() {
 
   function enviar(evento) {
     evento.preventDefault()
-    const resultado = criarChamado({ titulo, descricao, autor: usuario })
-    if (!resultado.ok) {
-      setErros(resultado.erros)
-      return
-    }
-    navegar('/chamados')
+    const novosErros = {}
+    if (titulo.trim().length < 5) novosErros.titulo = 'Escreva um título com pelo menos 5 letras.'
+    if (descricao.trim().length < 10) novosErros.descricao = 'Descreva o problema com pelo menos 10 letras.'
+    setErros(novosErros)
   }
 
   return (
@@ -55,6 +48,9 @@ export function NovoChamado() {
         </header>
 
         <form className="novo-cartao" onSubmit={enviar} noValidate>
+          <p className="banner" role="status">
+            O registro de chamados não está disponível nesta etapa. O formulário não salvará dados.
+          </p>
           <CampoTexto
             rotulo="Título"
             autoFocus

@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { Botao } from '../../../components/ui/Botao'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { useSessao } from '../../../contexto/Sessao'
-import { assumirChamado, listarChamados } from '../../../servicos/chamados'
-import { formatarData, iniciais } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 const FILTROS = [
@@ -13,41 +10,16 @@ const FILTROS = [
 ]
 
 export function Painel() {
-  const { usuario } = useSessao()
-  const [chamados, setChamados] = useState(() => listarChamados())
   const [filtro, setFiltro] = useState('todos')
   const [busca, setBusca] = useState('')
-  const [erro, setErro] = useState('')
 
   useTitulo('Visão geral')
 
   const termo = busca.trim().toLowerCase()
-  const chamadosFiltrados = chamados.filter((chamado) => {
-    if (filtro === 'livres' && chamado.responsavelId) return false
-    if (filtro === 'meus' && chamado.responsavelId !== usuario.id) return false
-
-    const textoChamado = `${chamado.titulo} ${chamado.autorNome}`.toLowerCase()
-    return textoChamado.includes(termo)
-  })
-
-  const semResponsavel = chamados.filter((chamado) => !chamado.responsavelId).length
-  const meusChamados = chamados.filter((chamado) => chamado.responsavelId === usuario.id).length
   const contagens = {
-    todos: chamados.length,
-    livres: semResponsavel,
-    meus: meusChamados,
-  }
-
-  function assumir(id) {
-    const resultado = assumirChamado(id, usuario)
-    setChamados(listarChamados())
-    setErro(resultado.ok ? '' : resultado.erro)
-  }
-
-  function responsavelDoChamado(chamado) {
-    if (!chamado.responsavelId) return 'Disponível para atendimento'
-    if (chamado.responsavelId === usuario.id) return 'Atribuído a você'
-    return chamado.responsavelNome || 'Responsável definido'
+    todos: '—',
+    livres: '—',
+    meus: '—',
   }
 
   return (
@@ -64,18 +36,18 @@ export function Painel() {
       <section className="dashboard-resumo" aria-label="Resumo dos chamados">
         <article className="resumo-item">
           <span className="resumo-rotulo">Chamados na fila</span>
-          <strong>{chamados.length}</strong>
-          <span className="resumo-detalhe">Total registrado</span>
+          <strong>—</strong>
+          <span className="resumo-detalhe">Dados indisponíveis</span>
         </article>
         <article className="resumo-item">
           <span className="resumo-rotulo">Aguardando responsável</span>
-          <strong>{semResponsavel}</strong>
-          <span className="resumo-detalhe">Precisam de atendimento</span>
+          <strong>—</strong>
+          <span className="resumo-detalhe">Dados indisponíveis</span>
         </article>
         <article className="resumo-item">
           <span className="resumo-rotulo">Atribuídos a mim</span>
-          <strong>{meusChamados}</strong>
-          <span className="resumo-detalhe">Sob sua responsabilidade</span>
+          <strong>—</strong>
+          <span className="resumo-detalhe">Dados indisponíveis</span>
         </article>
       </section>
 
@@ -85,7 +57,7 @@ export function Painel() {
             <h2 id="titulo-fila">Fila de chamados</h2>
             <p>Solicitações mais recentes primeiro</p>
           </div>
-          <span className="fila-total">{chamadosFiltrados.length} {chamadosFiltrados.length === 1 ? 'chamado' : 'chamados'}</span>
+          <span className="fila-total">Dados indisponíveis</span>
         </header>
 
         <div className="fila-ferramentas">
@@ -116,41 +88,10 @@ export function Painel() {
           </label>
         </div>
 
-        {erro ? <p className="banner" role="alert">{erro}</p> : null}
-        {chamadosFiltrados.length === 0 ? (
-          <EstadoVazio
-            titulo="Nenhum chamado encontrado"
-            texto={termo ? 'Tente outro termo ou escolha um filtro diferente.' : 'Não há chamados nesta fila por enquanto.'}
-          />
-        ) : (
-          <div className="fila-lista">
-            {chamadosFiltrados.map((chamado) => (
-              <article className="fila-item" key={chamado.id}>
-                <div className="fila-conteudo">
-                  <div className="fila-titulo-linha">
-                    <h3>{chamado.titulo}</h3>
-                    <span className="fila-status">{chamado.status}</span>
-                  </div>
-                  <p className="fila-descricao">{chamado.descricao}</p>
-                  <div className="fila-metadados">
-                    <span className="solicitante-avatar" aria-hidden="true">{iniciais(chamado.autorNome)}</span>
-                    <span>{chamado.autorNome || 'Solicitante'}</span>
-                    <span className="metadado-separador" aria-hidden="true">·</span>
-                    <time dateTime={chamado.criadoEm}>{formatarData(chamado.criadoEm)}</time>
-                  </div>
-                </div>
-                <div className="fila-responsavel">
-                  <span className={chamado.responsavelId ? 'responsavel-texto' : 'responsavel-texto sem-responsavel'}>
-                    {responsavelDoChamado(chamado)}
-                  </span>
-                  {!chamado.responsavelId ? (
-                    <Botao type="button" onClick={() => assumir(chamado.id)}>Assumir</Botao>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        <EstadoVazio
+          titulo="Fila indisponível"
+          texto={termo ? 'Não há dados reais para corresponder à busca.' : 'Os chamados serão listados quando houver uma fonte de dados real.'}
+        />
       </section>
     </div>
   )

@@ -1,13 +1,11 @@
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Botao } from '../../../components/ui/Botao'
 import { CampoTexto } from '../../../components/ui/CampoTexto'
 import { Marca } from '../../../components/ui/Marca'
-import { useSessao } from '../../../contexto/Sessao'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 export function Cadastrar() {
-  const { usuario, cadastrar } = useSessao()
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -17,15 +15,20 @@ export function Cadastrar() {
 
   useTitulo('Criar cadastro')
 
-  if (usuario) {
-    const destino = usuario.papel === 'responsavel' ? '/painel' : '/chamados'
-    return <Navigate to={destino} replace />
-  }
-
   function enviar(evento) {
     evento.preventDefault()
-    const resultado = cadastrar({ nome, email, senha, confirmar, papel })
-    if (!resultado.ok) setErros(resultado.erros)
+    const novosErros = {}
+    if (nome.trim().length < 3) novosErros.nome = 'Informe seu nome completo.'
+    if (nome.trim().length > 80) novosErros.nome = 'Use um nome com até 80 letras.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      novosErros.email = 'Informe um e-mail válido.'
+    }
+    if (senha.length < 6) novosErros.senha = 'A senha precisa ter pelo menos 6 caracteres.'
+    if (senha !== confirmar) novosErros.confirmar = 'As senhas não são iguais.'
+    if (papel !== 'solicitante' && papel !== 'responsavel') {
+      novosErros.papel = 'Escolha se você abre ou atende chamados.'
+    }
+    setErros(novosErros)
   }
 
   function aoDigitar(definir) {
@@ -41,7 +44,10 @@ export function Cadastrar() {
         <Marca />
         <p className="equipe">Equipe Rocket</p>
         <h1>Criar cadastro</h1>
-        <p className="subtitulo">Leva menos de um minuto.</p>
+        <p className="subtitulo">Crie sua conta de acesso.</p>
+        <p className="banner" role="status">
+          O cadastro não está disponível nesta etapa. O formulário não salvará dados.
+        </p>
 
         <form onSubmit={enviar} noValidate>
           <CampoTexto

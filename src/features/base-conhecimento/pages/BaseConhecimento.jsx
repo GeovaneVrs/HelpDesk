@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { BookOpen, CircleHelp, Mail, Monitor, Printer, Wifi } from 'lucide-react'
 import { Botao } from '../../../components/ui/Botao'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { useSessao } from '../../../contexto/Sessao'
 import { useTitulo } from '../../../hooks/useTitulo'
 
 const ARTIGOS = [
@@ -81,7 +80,7 @@ const ARTIGOS = [
       'Acesse a área “Chamados” no menu lateral.',
       'Localize sua solicitação e abra a conversa.',
       'Leia as mensagens da equipe e responda no campo ao final da conversa.',
-      'As solicitações e mensagens ficam salvas neste navegador.',
+      'Acesse seus chamados e abra a conversa correspondente.',
     ],
   },
 ]
@@ -89,7 +88,6 @@ const ARTIGOS = [
 const CATEGORIAS = ['Todas', ...new Set(ARTIGOS.map((artigo) => artigo.categoria))]
 
 export function BaseConhecimento() {
-  const { usuario } = useSessao()
   const [categoria, setCategoria] = useState('Todas')
   const [busca, setBusca] = useState('')
   const termo = busca.trim().toLocaleLowerCase('pt-BR')
@@ -102,9 +100,6 @@ export function BaseConhecimento() {
       .toLocaleLowerCase('pt-BR')
     return correspondeCategoria && texto.includes(termo)
   }), [categoria, termo])
-
-  const destino = usuario.papel === 'solicitante' ? '/chamados/novo' : '/chamados'
-  const textoAcao = usuario.papel === 'solicitante' ? 'Abrir um chamado' : 'Ver chamados'
 
   return (
     <div className="base-conhecimento">
@@ -181,7 +176,7 @@ export function BaseConhecimento() {
           <strong>Não encontrou o que precisava?</strong>
           <p>Conte à equipe o que está acontecendo e acompanhe a resposta por aqui.</p>
         </div>
-        <Botao para={destino}>{textoAcao}</Botao>
+        <Botao para="/chamados">Ver chamados</Botao>
       </aside>
     </div>
   )

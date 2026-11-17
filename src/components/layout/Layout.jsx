@@ -5,7 +5,6 @@ import {
   CirclePlus,
   ContactRound,
   LayoutDashboard,
-  LogOut,
   Moon,
   Settings,
   Sun,
@@ -13,8 +12,6 @@ import {
   Users,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useSessao } from '../../contexto/Sessao'
-import { iniciais } from '../../utils/texto'
 import { Marca } from '../ui/Marca'
 
 const icone = { size: 18, strokeWidth: 1.75, className: 'nav-icone', 'aria-hidden': true }
@@ -43,10 +40,7 @@ function ItemMenu({ para, rotulo, texto, Icone }) {
 }
 
 export function Layout() {
-  const { usuario, sair } = useSessao()
   const { pathname } = useLocation()
-  const inicio = usuario.papel === 'responsavel' ? '/painel' : '/chamados'
-  const papel = usuario.papel === 'responsavel' ? 'Equipe de suporte' : 'Solicitante'
   const [escuro, setEscuro] = useState(() => document.documentElement.dataset.tema === 'escuro')
 
   function alternarTema() {
@@ -65,23 +59,15 @@ export function Layout() {
   return (
     <div className="app">
       <aside className="barra-lateral">
-        <Marca para={inicio} />
+        <Marca para="/entrar" />
         <nav className="nav-grupo" aria-label="Menu principal">
-          {usuario.papel === 'responsavel' ? (
-            <ItemMenu para="/painel" rotulo="Visão geral" texto="Resumo da fila e do tempo de resposta." Icone={LayoutDashboard} />
-          ) : null}
+          <ItemMenu para="/painel" rotulo="Visão geral" texto="Resumo da fila e do tempo de resposta." Icone={LayoutDashboard} />
           <ItemMenu para="/chamados" rotulo="Chamados" texto="Solicitações abertas e o andamento de cada uma." Icone={Ticket} />
-          {usuario.papel === 'solicitante' ? (
-            <ItemMenu para="/chamados/novo" rotulo="Novo chamado" texto="Registrar um problema para a equipe atender." Icone={CirclePlus} />
-          ) : null}
+          <ItemMenu para="/chamados/novo" rotulo="Novo chamado" texto="Registrar um problema para a equipe atender." Icone={CirclePlus} />
           <ItemMenu para="/conhecimento" rotulo="Base de conhecimento" texto="Artigos para resolver sem abrir um chamado." Icone={BookOpen} />
-          {usuario.papel === 'responsavel' ? (
-            <>
-              <ItemMenu para="/relatorios" rotulo="Relatórios" texto="Números do atendimento por período." Icone={ChartColumn} />
-              <ItemMenu para="/equipe" rotulo="Equipe" texto="Quem atende e a carga de cada pessoa." Icone={Users} />
-              <ItemMenu para="/solicitantes" rotulo="Solicitantes" texto="Pessoas que abrem chamado e o histórico delas." Icone={ContactRound} />
-            </>
-          ) : null}
+          <ItemMenu para="/relatorios" rotulo="Relatórios" texto="Números do atendimento por período." Icone={ChartColumn} />
+          <ItemMenu para="/equipe" rotulo="Equipe" texto="Quem atende e a carga de cada pessoa." Icone={Users} />
+          <ItemMenu para="/solicitantes" rotulo="Solicitantes" texto="Pessoas que abrem chamado e o histórico delas." Icone={ContactRound} />
           <ItemMenu para="/configuracoes" rotulo="Configurações" texto="Preferências da conta e do atendimento." Icone={Settings} />
         </nav>
 
@@ -94,14 +80,6 @@ export function Layout() {
           >
             {escuro ? <Sun {...icone} /> : <Moon {...icone} />}
             <Dica rotulo={escuro ? 'Tema claro' : 'Tema escuro'} texto={escuro ? 'Volta para o fundo branco.' : 'Troca o branco por preto.'} />
-          </button>
-          <span className="nav-link nav-perfil" tabIndex={0} aria-label={`${usuario.nome}. ${papel}`}>
-            <span className="avatar">{iniciais(usuario.nome)}</span>
-            <Dica rotulo={usuario.nome} texto={papel} />
-          </span>
-          <button type="button" className="nav-link nav-sair" aria-label="Sair. Encerrar a sessão neste navegador." onClick={sair}>
-            <LogOut {...icone} />
-            <Dica rotulo="Sair" texto="Encerrar a sessão neste navegador." />
           </button>
         </div>
       </aside>

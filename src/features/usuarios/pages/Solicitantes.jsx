@@ -3,8 +3,6 @@ import { Clock, Ticket, UsersRound } from 'lucide-react'
 import { HistoricoChamados } from '../../chamados/components/HistoricoChamados'
 import { CartaoPessoa } from '../components/CartaoPessoa'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
-import { useSessao } from '../../../contexto/Sessao'
-import { listarSolicitantes } from '../../../servicos/pessoas'
 import { formatarData } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
@@ -15,19 +13,16 @@ const FILTROS = [
 ]
 
 export function Solicitantes() {
-  const { usuario } = useSessao()
   const [filtro, setFiltro] = useState('todos')
   const [busca, setBusca] = useState('')
-  const pessoas = listarSolicitantes()
+  const pessoas = []
 
   useTitulo('Solicitantes')
 
-  const totalChamados = pessoas.reduce((soma, pessoa) => soma + pessoa.total, 0)
-  const totalAguardando = pessoas.reduce((soma, pessoa) => soma + pessoa.aguardando, 0)
   const contagens = {
-    todos: pessoas.length,
-    aguardando: pessoas.filter((pessoa) => pessoa.aguardando > 0).length,
-    sem: pessoas.filter((pessoa) => pessoa.total === 0).length,
+    todos: '—',
+    aguardando: '—',
+    sem: '—',
   }
 
   const termo = busca.trim().toLowerCase()
@@ -52,24 +47,24 @@ export function Solicitantes() {
           <span className="numero-icone" aria-hidden="true"><UsersRound size={19} /></span>
           <div>
             <span className="numero-legenda">Solicitantes</span>
-            <strong>{pessoas.length}</strong>
-            <span className="numero-nota">Contas que abrem chamados</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
         <article className="numero numero-meus">
           <span className="numero-icone" aria-hidden="true"><Ticket size={19} /></span>
           <div>
             <span className="numero-legenda">Chamados registrados</span>
-            <strong>{totalChamados}</strong>
-            <span className="numero-nota">Somando todas as pessoas</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
         <article className="numero numero-aberto">
           <span className="numero-icone" aria-hidden="true"><Clock size={19} /></span>
           <div>
             <span className="numero-legenda">Aguardando equipe</span>
-            <strong>{totalAguardando}</strong>
-            <span className="numero-nota">Chamados ainda sem responsável</span>
+            <strong>—</strong>
+            <span className="numero-nota">Dados indisponíveis</span>
           </div>
         </article>
       </section>
@@ -112,8 +107,10 @@ export function Solicitantes() {
 
         {visiveis.length === 0 ? (
           <EstadoVazio
-            titulo="Nenhum solicitante encontrado"
-            texto={termo ? 'Tente outro nome ou e-mail.' : 'Ninguém se encaixa neste filtro agora.'}
+            titulo="Dados de solicitantes indisponíveis"
+            texto={termo
+              ? 'A busca ficará disponível quando houver uma fonte de dados real.'
+              : 'Os dados de solicitantes não estão disponíveis nesta etapa.'}
           />
         ) : (
           <div className="pessoas">
@@ -137,7 +134,6 @@ export function Solicitantes() {
               >
                 <HistoricoChamados
                   chamados={pessoa.chamados}
-                  usuario={usuario}
                   mostrar="responsavel"
                   vazio="Esta pessoa ainda não abriu chamados."
                 />

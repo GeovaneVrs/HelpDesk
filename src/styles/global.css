@@ -59,11 +59,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nav-dica strong { font-size: 13px; font-weight: 700; }
 .nav-dica small { color: var(--muted); font-size: 12px; line-height: 1.35; }
 .nav-link:hover .nav-dica, .nav-link:focus-visible .nav-dica { opacity: 1; }
-.nav-perfil { cursor: default; }
-.nav-perfil:hover { background: transparent; color: inherit; }
+
 .nav-icone { width: 18px; height: 18px; color: inherit; }
 .lateral-perfil { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; }
-.avatar { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 12px; background: rgba(255,255,255,.15); color: #fff; font-size: 11px; font-weight: 700; }
 .app-principal { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .conteudo { width: min(1240px, calc(100% - 28px)); flex: 1; margin: 0 auto; padding: 18px 0 40px; }
 .rodape { width: min(1240px, calc(100% - 28px)); display: flex; justify-content: space-between; gap: 12px; margin: 0 auto; padding: 16px 0 10px; border-top: 1px solid var(--line); color: #9aa4b2; font-size: 10px; }
@@ -81,8 +79,6 @@ h1 { color: var(--ink); font-size: clamp(28px, 3vw, 34px); font-weight: 720; let
 .botao-secundario:hover { background: #f8f9fc; }
 .botao-texto { min-height: 36px; padding: 0 10px; background: transparent; color: var(--blue); }
 .botao-texto:hover { background: var(--blue-soft); box-shadow: none; }
-.botao-sair { width: 30px; min-height: 30px; padding: 0; border: 0; background: transparent; color: #aab6c8; font-size: 18px; }
-.botao-sair:hover { background: rgba(255,255,255,.1); box-shadow: none; }
 .botao-bloco { width: 100%; }
 button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36); outline-offset: 3px; }
 .numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
@@ -198,18 +194,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgba(55,104,232,.36);
 .contador { color: #9aa4b2; font-size: 11px; font-variant-numeric: tabular-nums; }
 .campo-erro .entrada { border-color: #d45c52; }
 .mensagem-erro { color: var(--red); font-size: 11px; }
-.dica, .dica-exemplo { color: #8e99a8; font-size: 10px; }
+.dica { color: #8e99a8; font-size: 10px; }
 .banner { margin-bottom: 14px; padding: 11px 13px; border-radius: 8px; background: #fff0ee; color: var(--red); font-size: 12px; }
-.banner-ok { background: var(--green-soft); color: var(--green); }
-.divisor { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: #9aa4b2; font-size: 10px; }
-.divisor::before, .divisor::after { height: 1px; flex: 1; background: var(--line); content: ""; }
-.exemplos { display: grid; gap: 8px; }
-.exemplos .botao { min-height: 39px; font-size: 11px; }
-.dica-exemplo { margin-top: 9px; text-align: center; }
 .troca-tela { margin-top: 17px; color: #788497; font-size: 11px; text-align: center; }
 .troca-tela a { color: var(--blue); font-weight: 700; text-decoration: none; }
 .troca-tela a:hover { text-decoration: underline; }
-.link-discreto { display: block; margin: 12px auto 0; border: 0; background: transparent; color: #8a96a7; font-size: 10px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .grupo { margin: 0 0 16px; padding: 0; border: 0; }
 .grupo legend { margin-bottom: 8px; padding: 0; }
 .opcoes { display: grid; gap: 8px; }
@@ -410,7 +399,7 @@ html[data-tema="escuro"] .novo-dicas span,
 html[data-tema="escuro"] .opcao span,
 html[data-tema="escuro"] .equipe,
 html[data-tema="escuro"] .troca-tela,
-html[data-tema="escuro"] .link-discreto { color: var(--muted); }
+html[data-tema="escuro"] .dica { color: var(--muted); }
 html[data-tema="escuro"] .selo-aberto { color: #f0c27a; }
 html[data-tema="escuro"] .auth {
   background:

@@ -1,8 +1,7 @@
-import { podeConversar } from '../../../servicos/chamados'
 import { formatarData, textoResponsavel } from '../../../utils/texto'
 import { Botao } from '../../../components/ui/Botao'
 
-export function HistoricoChamados({ chamados, usuario, mostrar = 'responsavel', vazio }) {
+export function HistoricoChamados({ chamados, mostrar = 'responsavel', vazio }) {
   if (chamados.length === 0) {
     return <p className="historico-vazio">{vazio}</p>
   }
@@ -18,13 +17,11 @@ export function HistoricoChamados({ chamados, usuario, mostrar = 'responsavel', 
               {' · '}
               {mostrar === 'autor'
                 ? `Aberto por ${chamado.autorNome}`
-                : textoResponsavel(chamado, usuario.id)}
+                : textoResponsavel(chamado, null)}
             </span>
           </div>
           <span className={`selo selo-${chamado.status.toLowerCase()}`}>{chamado.status}</span>
-          {podeConversar(chamado, usuario) ? (
-            <Botao para={`/chamados/${chamado.id}`} variante="texto">Abrir conversa</Botao>
-          ) : null}
+          <Botao para={`/chamados/${chamado.id}`} variante="texto">Abrir conversa</Botao>
         </li>
       ))}
     </ul>

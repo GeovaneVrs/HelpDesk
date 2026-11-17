@@ -1,53 +1,57 @@
-# Helpdesk — Equipe Rocket (AV1)
+# HelpDesk — Equipe Rocket
 
-Integrantes: Geovane Valério Ribeiro da Silva, Heitor Júlio Souza Batista, Lieberty Wendell Queiroz de Holanda, Vanessa Camelo Lins do Nascimento, José Lúfyo César França Camelo e Ananda Almeida Ramos.
+Frontend acadêmico para organizar a interface de um sistema de suporte usando React e Vite.
 
-Sistema para registrar e acompanhar chamados de suporte.
+## Estado atual
 
-Nesta entrega os dados ficam **neste navegador** (localStorage). Cada computador tem a sua cópia. A senha também fica só aí, sem criptografia — na AV2 ela passa para o servidor. A API Spring Boot entra na AV2.
+Esta versão não possui backend nem dados de exemplo. Os formulários de entrada, cadastro, chamados, mensagens e perfil preservam sua apresentação e validações de interface, mas não salvam nem enviam dados. As rotas internas permanecem protegidas e redirecionam para a tela de entrada enquanto não houver autenticação real.
 
-## Como abrir
+A preferência de tema claro/escuro é a única informação persistida pelo frontend, em `localStorage`. Os artigos da base de conhecimento são conteúdo estático mantido no código, não registros de chamados ou usuários.
 
-Na pasta do projeto:
+## Executar
+
+Na raiz do projeto:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra http://localhost:5173
+Para gerar o build de produção:
 
-## Contas de exemplo
-
-Senha das duas: `123456`
-
-| Quem | E-mail | O que vê |
-| --- | --- | --- |
-| Ana Souza | ana@empresa.com | Lista dos chamados que ela abriu |
-| Carlos Lima | carlos@empresa.com | Painel para assumir chamados |
-
-Na tela de entrar também dá para clicar nessas contas. O botão **Restaurar dados de exemplo** apaga o que foi cadastrado neste navegador e volta a essas contas.
-
-## O que a AV1 tem
-
-- Login e cadastro (solicitante ou responsável)
-- Lista dos chamados de quem está logado
-- Painel do responsável, com busca, filtro e botão **Assumir**
-
-## Onde mexer
-
-```
-src/paginas        telas
-src/componentes    botão, campo, cartão, topo
-src/estilos        cores e espaçamento (comece pelo :root)
-src/servicos       regras de usuário e chamado
-src/dados          gravação no navegador e dados de exemplo
+```bash
+npm run build
 ```
 
-As telas não falam com o localStorage. Elas chamam `src/servicos`. Na AV2, a equipe troca o miolo desses serviços por `fetch` na API. As telas podem continuar iguais.
+## Organização
 
-Para ver os dados salvos: DevTools do navegador → Application → Local Storage.
+```text
+src/
+├── components/
+│   ├── layout/       # Layout e proteção das rotas
+│   └── ui/           # Componentes visuais compartilhados
+├── features/
+│   ├── autenticacao/ # Entrada e cadastro
+│   ├── base-conhecimento/
+│   ├── chamados/     # Listagem, abertura, fila e conversa
+│   ├── dashboard/    # Painel, relatórios e gráficos
+│   ├── em-desenvolvimento/
+│   └── usuarios/     # Configurações, equipe e solicitantes
+├── hooks/            # Hooks globais, como useTitulo
+├── services/         # Reservado para futura integração; sem implementação
+├── routes/           # Tabela de rotas do React Router
+├── styles/           # Estilos globais da interface
+├── utils/            # Formatação e utilitários compartilhados
+├── App.jsx           # Ponto de entrada da aplicação
+└── main.jsx          # Inicialização do React e tema
+```
 
-## Fica para a AV2
+Componentes e páginas específicos ficam na respectiva funcionalidade; elementos reutilizados entre funcionalidades ficam em `components/`. A arquitetura é intencionalmente simples e não introduz uma camada de dados simulada.
 
-Tipos de usuário além destes dois, tipos de chamado, anexos, setores, controle de status, chat e assistente virtual.
+> O Git não versiona diretórios vazios. `src/services/` deve ser recriado vazio quando necessário; não adicione arquivos placeholder.
+
+## Próximos passos
+
+A futura integração real deverá introduzir autenticação e operações de dados em uma camada de serviços e conectar as páginas aos resultados reais. Não há cliente HTTP, endpoint ou integração com banco nesta versão. As rotas de aplicação estão preservadas, mas continuam bloqueadas até existir autenticação real.
+
+O `package.json` disponibiliza scripts de desenvolvimento e build; não declara scripts de teste ou lint.

@@ -1,7 +1,4 @@
-/*
-  Textos prontos para a tela.
-  Regra de negócio fica na pasta servicos, não aqui.
-*/
+// Funções de formatação compartilhadas pelas telas.
 
 export function formatarData(iso) {
   const data = new Date(iso)

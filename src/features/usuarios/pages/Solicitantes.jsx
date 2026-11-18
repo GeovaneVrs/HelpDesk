@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Clock, Ticket, UsersRound } from 'lucide-react'
 import { HistoricoChamados } from '../../chamados/components/HistoricoChamados'
 import { CartaoPessoa } from '../components/CartaoPessoa'
+import { EstadoApi } from '../../../components/ui/EstadoApi'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useRecurso } from '../../../hooks/useRecurso'
+import { chamadosApi } from '../../../services/chamados'
+import { usuariosApi } from '../../../services/usuarios'
 import { formatarData } from '../../../utils/texto'
 import { useTitulo } from '../../../hooks/useTitulo'
 
@@ -15,22 +19,42 @@ const FILTROS = [
 export function Solicitantes() {
   const [filtro, setFiltro] = useState('todos')
   const [busca, setBusca] = useState('')
-  const pessoas = []
-
+  const carregar = useCallback(async () => {
+    const [usuarios, chamados] = await Promise.all([
+      usuariosApi.listar('USER'),
+      chamadosApi.listar(),
+    ])
+    return usuarios.map((usuario) => {
+      const doUsuario = chamados
+        .filter((chamado) => String(chamado.solicitanteId || chamado.usuarioId) === String(usuario.id))
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      return {
+        ...usuario,
+        chamados: doUsuario,
+        total: doUsuario.length,
+        aguardando: doUsuario.filter((chamado) => chamado.status === 'ABERTO').length,
+        emAtendimento: doUsuario.filter((chamado) => chamado.status === 'EM_ANDAMENTO').length,
+        ultimoChamadoEm: doUsuario[0]?.createdAt,
+      }
+    })
+  }, [])
+  const { dados: pessoas, carregando, erro, recarregar } = useRecurso(carregar)
   useTitulo('Solicitantes')
 
   const contagens = {
-    todos: '—',
-    aguardando: '—',
-    sem: '—',
+    todos: pessoas?.length ?? 0,
+    aguardando: (pessoas || []).filter((pessoa) => pessoa.aguardando > 0).length,
+    sem: (pessoas || []).filter((pessoa) => pessoa.total === 0).length,
   }
 
-  const termo = busca.trim().toLowerCase()
-  const visiveis = pessoas.filter((pessoa) => {
+  const termo = busca.trim().toLocaleLowerCase('pt-BR')
+  const visiveis = (pessoas || []).filter((pessoa) => {
     if (filtro === 'aguardando' && pessoa.aguardando === 0) return false
     if (filtro === 'sem' && pessoa.total > 0) return false
-    return `${pessoa.nome} ${pessoa.email}`.toLowerCase().includes(termo)
+    return `${pessoa.name} ${pessoa.email}`.toLocaleLowerCase('pt-BR').includes(termo)
   })
+  const todosChamados = (pessoas || []).flatMap((pessoa) => pessoa.chamados)
+  const aguardandoTotal = todosChamados.filter((chamado) => chamado.status === 'ABERTO').length
 
   return (
     <>
@@ -47,24 +71,24 @@ export function Solicitantes() {
           <span className="numero-icone" aria-hidden="true"><UsersRound size={19} /></span>
           <div>
             <span className="numero-legenda">Solicitantes</span>
-            <strong>—</strong>
-            <span className="numero-nota">Dados indisponíveis</span>
+            <strong>{carregando ? '—' : pessoas?.length ?? 0}</strong>
+            <span className="numero-nota">Contas solicitantes</span>
           </div>
         </article>
         <article className="numero numero-meus">
           <span className="numero-icone" aria-hidden="true"><Ticket size={19} /></span>
           <div>
             <span className="numero-legenda">Chamados registrados</span>
-            <strong>—</strong>
-            <span className="numero-nota">Dados indisponíveis</span>
+            <strong>{carregando ? '—' : todosChamados.length}</strong>
+            <span className="numero-nota">Total registrado</span>
           </div>
         </article>
         <article className="numero numero-aberto">
           <span className="numero-icone" aria-hidden="true"><Clock size={19} /></span>
           <div>
             <span className="numero-legenda">Aguardando equipe</span>
-            <strong>—</strong>
-            <span className="numero-nota">Dados indisponíveis</span>
+            <strong>{carregando ? '—' : aguardandoTotal}</strong>
+            <span className="numero-nota">Status aberto</span>
           </div>
         </article>
       </section>
@@ -88,7 +112,7 @@ export function Solicitantes() {
                 onClick={() => setFiltro(opcao.id)}
               >
                 {opcao.rotulo}
-                <span className="filtro-contagem">{contagens[opcao.id]}</span>
+                <span className="filtro-contagem">{carregando ? '—' : contagens[opcao.id]}</span>
               </button>
             ))}
           </div>
@@ -105,19 +129,20 @@ export function Solicitantes() {
           </label>
         </div>
 
-        {visiveis.length === 0 ? (
+        <EstadoApi carregando={carregando} erro={erro} recarregar={recarregar} />
+        {!carregando && !erro && visiveis.length === 0 ? (
           <EstadoVazio
-            titulo="Dados de solicitantes indisponíveis"
+            titulo="Nenhum solicitante encontrado"
             texto={termo
-              ? 'A busca ficará disponível quando houver uma fonte de dados real.'
-              : 'Os dados de solicitantes não estão disponíveis nesta etapa.'}
+              ? 'Tente outro termo de busca.'
+              : 'Não há usuários com o perfil de solicitante.'}
           />
-        ) : (
+        ) : !erro && visiveis.length > 0 ? (
           <div className="pessoas">
             {visiveis.map((pessoa) => (
               <CartaoPessoa
                 key={pessoa.id}
-                nome={pessoa.nome}
+                nome={pessoa.name}
                 email={pessoa.email}
                 extra={
                   <span className="pessoa-nota">
@@ -140,7 +165,7 @@ export function Solicitantes() {
               </CartaoPessoa>
             ))}
           </div>
-        )}
+        ) : null}
       </section>
     </>
   )

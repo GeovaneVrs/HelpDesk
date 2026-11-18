@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Mail, Ticket, Users } from 'lucide-react'
+import { EstadoApi } from '../../../components/ui/EstadoApi'
 import { EstadoVazio } from '../../../components/ui/EstadoVazio'
+import { useRecurso } from '../../../hooks/useRecurso'
+import { chamadosApi } from '../../../services/chamados'
+import { usuariosApi } from '../../../services/usuarios'
 import { useTitulo } from '../../../hooks/useTitulo'
 import { iniciais } from '../../../utils/texto'
 
@@ -9,14 +13,24 @@ export function Equipe() {
 
   const [busca, setBusca] = useState('')
 
-  const equipe = []
-
-  const termo = busca.trim().toLowerCase()
-
-  const membrosVisiveis = equipe.filter((membro) =>
-    `${membro.nome} ${membro.email}`
-      .toLowerCase()
-      .includes(termo),
+  const carregar = useCallback(async () => {
+    const [membros, chamados] = await Promise.all([
+      usuariosApi.listar('TECHNICIAN'),
+      chamadosApi.listar(),
+    ])
+    return membros.map((membro) => {
+      const atribuidos = chamados.filter((chamado) => String(chamado.tecnicoId || chamado.tecnico?.id) === String(membro.id))
+      return {
+        ...membro,
+        totalChamados: atribuidos.length,
+        chamadosAbertos: atribuidos.filter((chamado) => ['ABERTO', 'EM_ANDAMENTO'].includes(chamado.status)).length,
+      }
+    })
+  }, [])
+  const { dados: equipe, carregando, erro, recarregar } = useRecurso(carregar)
+  const termo = busca.trim().toLocaleLowerCase('pt-BR')
+  const membrosVisiveis = (equipe || []).filter((membro) =>
+    `${membro.name} ${membro.email}`.toLocaleLowerCase('pt-BR').includes(termo),
   )
 
   return (
@@ -41,7 +55,7 @@ export function Equipe() {
 
           <div>
             <span>MEMBROS</span>
-            <strong>—</strong>
+            <strong>{carregando ? '—' : equipe?.length ?? 0}</strong>
           </div>
         </article>
 
@@ -52,7 +66,7 @@ export function Equipe() {
 
           <div>
             <span>CHAMADOS ATRIBUÍDOS</span>
-            <strong>—</strong>
+            <strong>{carregando ? '—' : equipe?.reduce((total, membro) => total + membro.totalChamados, 0) ?? 0}</strong>
           </div>
         </article>
       </section>
@@ -91,29 +105,30 @@ export function Equipe() {
             />
           </label>
 
-          <span className="resultado-contagem">Dados indisponíveis</span>
+          <span className="resultado-contagem">{membrosVisiveis.length} membros</span>
         </div>
 
-        {membrosVisiveis.length === 0 ? (
+        <EstadoApi carregando={carregando} erro={erro} recarregar={recarregar} />
+        {!carregando && !erro && membrosVisiveis.length === 0 ? (
           <EstadoVazio
             titulo="Nenhum membro encontrado"
             texto={
               termo
-                ? 'A busca ficará disponível quando houver uma fonte de dados real.'
-              : 'Os dados da equipe não estão disponíveis nesta etapa.'
+                ? 'Tente outro termo de busca.'
+                : 'Nenhum usuário está cadastrado com o perfil de técnico.'
             }
           />
         ) : (
-          <div className="equipe-lista">
+          !erro && membrosVisiveis.length > 0 ? <div className="equipe-lista">
             {membrosVisiveis.map((membro) => (
               <article className="membro-card" key={membro.id}>
                 <div className="membro-cabecalho">
                   <div className="membro-avatar">
-                    {iniciais(membro.nome)}
+                    {iniciais(membro.name)}
                   </div>
 
                   <div className="membro-identidade">
-                    <h3>{membro.nome}</h3>
+                    <h3>{membro.name}</h3>
 
                     <span>
                       <Mail size={13} aria-hidden="true" />
@@ -164,7 +179,7 @@ export function Equipe() {
                 </div>
               </article>
             ))}
-          </div>
+          </div> : null
         )}
       </section>
     </>

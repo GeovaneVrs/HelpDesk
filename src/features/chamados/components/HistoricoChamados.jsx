@@ -1,5 +1,6 @@
-import { formatarData, textoResponsavel } from '../../../utils/texto'
+import { formatarData } from '../../../utils/texto'
 import { Botao } from '../../../components/ui/Botao'
+import { nomeStatus } from '../dominio'
 
 export function HistoricoChamados({ chamados, mostrar = 'responsavel', vazio }) {
   if (chamados.length === 0) {
@@ -13,14 +14,14 @@ export function HistoricoChamados({ chamados, mostrar = 'responsavel', vazio }) 
           <div className="historico-texto">
             <strong>{chamado.titulo}</strong>
             <span>
-              {formatarData(chamado.criadoEm)}
+              {formatarData(chamado.createdAt || chamado.criadoEm)}
               {' · '}
               {mostrar === 'autor'
-                ? `Aberto por ${chamado.autorNome}`
-                : textoResponsavel(chamado, null)}
+                ? `Aberto por ${chamado.solicitanteNome || chamado.autorNome || 'solicitante'}`
+                : chamado.tecnicoNome ? `Técnico: ${chamado.tecnicoNome}` : 'Sem responsável'}
             </span>
           </div>
-          <span className={`selo selo-${chamado.status.toLowerCase()}`}>{chamado.status}</span>
+          <span className={`selo selo-${chamado.status.toLowerCase()}`}>{nomeStatus(chamado.status)}</span>
           <Botao para={`/chamados/${chamado.id}`} variante="texto">Abrir conversa</Botao>
         </li>
       ))}

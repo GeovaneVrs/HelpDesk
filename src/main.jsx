@@ -1,12 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ProvedorSessao } from './contexto/Sessao'
-import { prepararDados } from './dados/armazenamento'
 import App from './App'
-import './estilos/global.css'
-
-prepararDados()
+import { ProvedorAutenticacao } from './contexto/Autenticacao'
+import './styles/global.css'
 
 if (localStorage.getItem('helpdesk.tema') === 'escuro') {
   document.documentElement.dataset.tema = 'escuro'
@@ -15,9 +12,9 @@ if (localStorage.getItem('helpdesk.tema') === 'escuro') {
 createRoot(document.getElementById('raiz')).render(
   <StrictMode>
     <BrowserRouter>
-      <ProvedorSessao>
+      <ProvedorAutenticacao>
         <App />
-      </ProvedorSessao>
+      </ProvedorAutenticacao>
     </BrowserRouter>
   </StrictMode>,
 )

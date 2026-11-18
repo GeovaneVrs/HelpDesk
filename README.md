@@ -1,53 +1,63 @@
-# Helpdesk — Equipe Rocket (AV1)
+# HelpDesk — Equipe Rocket
 
-Integrantes: Geovane Valério Ribeiro da Silva, Heitor Júlio Souza Batista, Lieberty Wendell Queiroz de Holanda, Vanessa Camelo Lins do Nascimento, José Lúfyo César França Camelo e Ananda Almeida Ramos.
+Frontend acadêmico para atendimento de suporte, construído com React 19, Vite 6 e React Router DOM 7. A aplicação consome a API REST do HelpDesk.
 
-Sistema para registrar e acompanhar chamados de suporte.
+## Requisitos
 
-Nesta entrega os dados ficam **neste navegador** (localStorage). Cada computador tem a sua cópia. A senha também fica só aí, sem criptografia — na AV2 ela passa para o servidor. A API Spring Boot entra na AV2.
+- Node.js e npm compatíveis com Vite 6
+- API HelpDesk em execução (por padrão, `http://localhost:8080`)
 
-## Como abrir
-
-Na pasta do projeto:
+## Executar
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra http://localhost:5173
+No desenvolvimento, as requisições `/api` são encaminhadas pelo proxy do Vite para `http://localhost:8080`, evitando problemas de CORS entre `localhost` e `127.0.0.1`. Para usar outra instância, configure `VITE_API_URL` no ambiente; o cliente acrescenta `/api`.
 
-## Contas de exemplo
-
-Senha das duas: `123456`
-
-| Quem | E-mail | O que vê |
-| --- | --- | --- |
-| Ana Souza | ana@empresa.com | Lista dos chamados que ela abriu |
-| Carlos Lima | carlos@empresa.com | Painel para assumir chamados |
-
-Na tela de entrar também dá para clicar nessas contas. O botão **Restaurar dados de exemplo** apaga o que foi cadastrado neste navegador e volta a essas contas.
-
-## O que a AV1 tem
-
-- Login e cadastro (solicitante ou responsável)
-- Lista dos chamados de quem está logado
-- Painel do responsável, com busca, filtro e botão **Assumir**
-
-## Onde mexer
-
-```
-src/paginas        telas
-src/componentes    botão, campo, cartão, topo
-src/estilos        cores e espaçamento (comece pelo :root)
-src/servicos       regras de usuário e chamado
-src/dados          gravação no navegador e dados de exemplo
+```bash
+npm run build
 ```
 
-As telas não falam com o localStorage. Elas chamam `src/servicos`. Na AV2, a equipe troca o miolo desses serviços por `fetch` na API. As telas podem continuar iguais.
+## Integração
 
-Para ver os dados salvos: DevTools do navegador → Application → Local Storage.
+O cliente HTTP compartilhado em `src/services/api.js` envia o token Bearer, trata erros HTTP e limpa a sessão quando a API responde com HTTP 401. Os módulos em `src/services/` encapsulam autenticação, usuários, departamentos, chamados e solicitações para acesso técnico.
 
-## Fica para a AV2
+| Perfil | Funcionalidades conectadas |
+|---|---|
+| Solicitante (`USER`) | Cadastro, login, perfil, senha, abertura e acompanhamento dos próprios chamados, comentários e solicitação para se tornar técnico |
+| Técnico (`TECHNICIAN`) | Fila e detalhes dos chamados, alteração de status, atribuição, painel, relatórios derivados, equipe e solicitantes |
+| Administrador (`ADMIN`) | Funcionalidades da equipe, gerenciamento de usuários e departamentos e decisão sobre solicitações técnicas |
 
-Tipos de usuário além destes dois, tipos de chamado, anexos, setores, controle de status, chat e assistente virtual.
+O cadastro público cria somente contas `USER`; papéis administrativos e técnicos são controlados pelas rotas protegidas e pela API. A base de conhecimento continua sendo conteúdo editorial estático. Os relatórios são calculados a partir dos chamados retornados pela API; não há endpoint de relatórios documentado.
+
+## Contas de demonstração
+
+No perfil `dev`, quando o seed inicializa um banco vazio, estão disponíveis estas contas:
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Administrador (`ADMIN`) | `admin@helpdesk.com` | `123456` |
+| Técnico (`TECHNICIAN`) | `carlos.tecnico@helpdesk.com` | `123456` |
+| Técnico (`TECHNICIAN`) | `mariana.tecnica@helpdesk.com` | `123456` |
+
+Essas credenciais são **somente para desenvolvimento local**. O seed não substitui usuários de um banco já populado; não use essas senhas em produção. O README do backend contém detalhes sobre o seed e os demais usuários de teste.
+
+Os dados de perfil e autenticação são mantidos em `localStorage` nas chaves `helpdesk.token` e `helpdesk.usuario`. A preferência de tema usa `helpdesk.tema`. Uma sessão persistida é validada novamente em `/auth/me` ao iniciar a aplicação.
+
+## Organização
+
+```text
+src/
+├── components/     # Layout e elementos visuais compartilhados
+├── contexto/       # Estado global de autenticação
+├── features/       # Páginas e componentes por funcionalidade
+├── hooks/          # Hooks reutilizáveis
+├── routes/         # Rotas e controle de acesso
+├── services/       # Cliente HTTP e módulos da API
+├── styles/         # Estilos globais
+└── utils/          # Formatação e utilitários
+```
+
+O `package.json` disponibiliza scripts de desenvolvimento e build; não declara scripts de teste ou lint.

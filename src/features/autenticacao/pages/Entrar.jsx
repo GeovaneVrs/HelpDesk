@@ -1,23 +1,42 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Botao } from '../../../components/ui/Botao'
 import { CampoTexto } from '../../../components/ui/CampoTexto'
 import { Marca } from '../../../components/ui/Marca'
+import { useAutenticacao } from '../../../contexto/Autenticacao'
+import { mensagemDeErro } from '../../../services/api'
 import { useTitulo } from '../../../hooks/useTitulo'
 
+function destinoDoPapel(role) {
+  return role === 'USER' ? '/chamados' : '/painel'
+}
+
 export function Entrar() {
+  const { usuario, estado, entrar } = useAutenticacao()
+  const navegar = useNavigate()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [erros, setErros] = useState({})
+  const [erro, setErro] = useState('')
+  const [carregando, setCarregando] = useState(false)
 
   useTitulo('Entrar')
 
-  function enviar(evento) {
+  if (usuario && estado === 'autenticado') {
+    return <Navigate to={destinoDoPapel(usuario.role)} replace />
+  }
+
+  async function enviar(evento) {
     evento.preventDefault()
-    const novosErros = {}
-    if (!email.trim()) novosErros.email = 'Informe o e-mail.'
-    if (!senha) novosErros.senha = 'Informe a senha.'
-    setErros(novosErros)
+    setErro('')
+    setCarregando(true)
+    try {
+      const autenticado = await entrar(email.trim(), senha)
+      navegar(destinoDoPapel(autenticado.role), { replace: true })
+    } catch (erroLogin) {
+      setErro(mensagemDeErro(erroLogin))
+    } finally {
+      setCarregando(false)
+    }
   }
 
   return (
@@ -26,10 +45,9 @@ export function Entrar() {
         <Marca />
         <p className="equipe">Equipe Rocket</p>
         <h1>Entrar</h1>
-        <p className="subtitulo">Use seu e-mail e senha para ver os chamados.</p>
-        <p className="banner" role="status">
-          A autenticação não está disponível nesta etapa. O formulário não enviará dados.
-        </p>
+        <p className="subtitulo">Use seu e-mail e senha para acessar o HelpDesk.</p>
+
+        {erro ? <p className="banner" role="alert">{erro}</p> : null}
 
         <form onSubmit={enviar} noValidate>
           <CampoTexto
@@ -37,26 +55,20 @@ export function Entrar() {
             type="email"
             autoComplete="email"
             autoFocus
+            required
             value={email}
-            onChange={(evento) => {
-              setEmail(evento.target.value)
-              setErros({})
-            }}
-            erro={erros.email}
+            onChange={(evento) => setEmail(evento.target.value)}
           />
           <CampoTexto
             rotulo="Senha"
             type="password"
             autoComplete="current-password"
+            required
             value={senha}
-            onChange={(evento) => {
-              setSenha(evento.target.value)
-              setErros({})
-            }}
-            erro={erros.senha}
+            onChange={(evento) => setSenha(evento.target.value)}
           />
-          <Botao bloco type="submit">
-            Entrar
+          <Botao bloco type="submit" disabled={carregando}>
+            {carregando ? 'Entrando...' : 'Entrar'}
           </Botao>
         </form>
 

@@ -1,39 +1,72 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Botao } from '../../../components/ui/Botao'
 import { CampoTexto } from '../../../components/ui/CampoTexto'
+import { EstadoVazio } from '../../../components/ui/EstadoVazio'
 import { Marca } from '../../../components/ui/Marca'
+import { useRecurso } from '../../../hooks/useRecurso'
 import { useTitulo } from '../../../hooks/useTitulo'
+import { api, mensagemDeErro } from '../../../services/api'
+import { usuariosApi } from '../../../services/usuarios'
 
 export function Cadastrar() {
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [confirmar, setConfirmar] = useState('')
-  const [papel, setPapel] = useState('solicitante')
+  const [cpf, setCpf] = useState('')
+  const [matricula, setMatricula] = useState('')
+  const [ocupacao, setOcupacao] = useState('')
+  const [departamentoId, setDepartamentoId] = useState('')
   const [erros, setErros] = useState({})
+  const [erroGeral, setErroGeral] = useState('')
+  const [sucesso, setSucesso] = useState(false)
+  const [enviando, setEnviando] = useState(false)
 
+  const carregarDepartamentos = useCallback(
+    () => api.get('/departamentos?apenasAtivos=true'),
+    [],
+  )
+  const departamentos = useRecurso(carregarDepartamentos)
   useTitulo('Criar cadastro')
 
-  function enviar(evento) {
+  async function enviar(evento) {
     evento.preventDefault()
+    setErroGeral('')
+    setErros({})
     const novosErros = {}
-    if (nome.trim().length < 3) novosErros.nome = 'Informe seu nome completo.'
-    if (nome.trim().length > 80) novosErros.nome = 'Use um nome com até 80 letras.'
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      novosErros.email = 'Informe um e-mail válido.'
+    if (new TextEncoder().encode(senha).length > 72) {
+      novosErros.password = 'A senha deve ter no máximo 72 bytes UTF-8.'
     }
-    if (senha.length < 6) novosErros.senha = 'A senha precisa ter pelo menos 6 caracteres.'
-    if (senha !== confirmar) novosErros.confirmar = 'As senhas não são iguais.'
-    if (papel !== 'solicitante' && papel !== 'responsavel') {
-      novosErros.papel = 'Escolha se você abre ou atende chamados.'
+    if (!departamentoId) novosErros.departamentoId = 'Selecione um departamento.'
+    if (Object.keys(novosErros).length) {
+      setErros(novosErros)
+      return
     }
-    setErros(novosErros)
+
+    setEnviando(true)
+    try {
+      await usuariosApi.cadastrar({
+        name: nome.trim(),
+        email: email.trim(),
+        password: senha,
+        cpf: cpf.trim() || null,
+        matricula: matricula.trim() || null,
+        ocupacao: ocupacao.trim() || null,
+        departamentoId: Number(departamentoId),
+      })
+      setSucesso(true)
+    } catch (erroCadastro) {
+      setErroGeral(mensagemDeErro(erroCadastro))
+      setErros(erroCadastro.fields || {})
+    } finally {
+      setEnviando(false)
+    }
   }
 
   function aoDigitar(definir) {
     return (evento) => {
       definir(evento.target.value)
+      setErroGeral('')
       setErros({})
     }
   }
@@ -44,84 +77,102 @@ export function Cadastrar() {
         <Marca />
         <p className="equipe">Equipe Rocket</p>
         <h1>Criar cadastro</h1>
-        <p className="subtitulo">Crie sua conta de acesso.</p>
-        <p className="banner" role="status">
-          O cadastro não está disponível nesta etapa. O formulário não salvará dados.
-        </p>
+        <p className="subtitulo">Crie uma conta de solicitante para acessar o sistema.</p>
 
-        <form onSubmit={enviar} noValidate>
-          <CampoTexto
-            rotulo="Nome completo"
-            autoComplete="name"
-            value={nome}
-            onChange={aoDigitar(setNome)}
-            erro={erros.nome}
-          />
-          <CampoTexto
-            rotulo="E-mail"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={aoDigitar(setEmail)}
-            erro={erros.email}
-          />
-          <CampoTexto
-            rotulo="Senha"
-            type="password"
-            autoComplete="new-password"
-            value={senha}
-            onChange={aoDigitar(setSenha)}
-            erro={erros.senha}
-            dica="Mínimo de 6 caracteres."
-          />
-          <CampoTexto
-            rotulo="Confirmar senha"
-            type="password"
-            autoComplete="new-password"
-            value={confirmar}
-            onChange={aoDigitar(setConfirmar)}
-            erro={erros.confirmar}
-          />
-
-          <fieldset className="grupo">
-            <legend>Como você vai usar o sistema?</legend>
-            <div className="opcoes">
-              <button
-                type="button"
-                className={papel === 'solicitante' ? 'opcao ativa' : 'opcao'}
-                aria-pressed={papel === 'solicitante'}
-                onClick={() => {
-                  setPapel('solicitante')
-                  setErros({})
-                }}
-              >
-                <strong>Solicitante</strong>
-                <span>Abro chamados quando preciso de ajuda.</span>
-              </button>
-              <button
-                type="button"
-                className={papel === 'responsavel' ? 'opcao ativa' : 'opcao'}
-                aria-pressed={papel === 'responsavel'}
-                onClick={() => {
-                  setPapel('responsavel')
-                  setErros({})
-                }}
-              >
-                <strong>Responsável</strong>
-                <span>Atendo chamados no painel da equipe.</span>
-              </button>
-            </div>
-            {erros.papel ? <p className="mensagem-erro">{erros.papel}</p> : null}
-          </fieldset>
-
-          <Botao bloco type="submit">
-            Criar conta
-          </Botao>
-        </form>
-
-        <p className="troca-tela">
-          Já tem conta? <Link to="/entrar">Entrar</Link>
-        </p>
+        {sucesso ? (
+          <>
+            <p className="banner banner-ok" role="status">Cadastro realizado. Agora entre com seu e-mail e senha.</p>
+            <p className="troca-tela"><Link to="/entrar">Ir para entrar</Link></p>
+          </>
+        ) : (
+          <>
+            {erroGeral ? <p className="banner" role="alert">{erroGeral}</p> : null}
+            {departamentos.erro ? (
+              <EstadoVazio
+                titulo="Não foi possível carregar os departamentos"
+                texto={mensagemDeErro(departamentos.erro)}
+                acao={<Botao type="button" variante="secundario" onClick={departamentos.recarregar}>Tentar novamente</Botao>}
+              />
+            ) : null}
+            {!departamentos.erro ? (
+              <form onSubmit={enviar} noValidate>
+                <CampoTexto
+                  rotulo="Nome completo"
+                  autoComplete="name"
+                  maxLength={150}
+                  required
+                  value={nome}
+                  onChange={aoDigitar(setNome)}
+                  erro={erros.name}
+                />
+                <CampoTexto
+                  rotulo="E-mail"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={aoDigitar(setEmail)}
+                  erro={erros.email}
+                />
+                <CampoTexto
+                  rotulo="Senha"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={6}
+                  maxLength={72}
+                  required
+                  value={senha}
+                  onChange={aoDigitar(setSenha)}
+                  erro={erros.password}
+                  dica="Mínimo de 6 caracteres."
+                />
+                <CampoTexto
+                  rotulo="CPF (opcional)"
+                  maxLength={14}
+                  value={cpf}
+                  onChange={aoDigitar(setCpf)}
+                  erro={erros.cpf}
+                />
+                <CampoTexto
+                  rotulo="Matrícula (opcional)"
+                  maxLength={30}
+                  value={matricula}
+                  onChange={aoDigitar(setMatricula)}
+                  erro={erros.matricula}
+                />
+                <CampoTexto
+                  rotulo="Ocupação (opcional)"
+                  maxLength={100}
+                  value={ocupacao}
+                  onChange={aoDigitar(setOcupacao)}
+                  erro={erros.ocupacao}
+                />
+                <div className="campo">
+                  <label htmlFor="departamentoId">Departamento</label>
+                  <select
+                    id="departamentoId"
+                    className="entrada"
+                    required
+                    value={departamentoId}
+                    onChange={aoDigitar(setDepartamentoId)}
+                  >
+                    <option value="">Selecione</option>
+                    {(departamentos.dados || []).map((departamento) => (
+                      <option key={departamento.id} value={departamento.id}>{departamento.nome}</option>
+                    ))}
+                  </select>
+                  {erros.departamentoId ? <p className="mensagem-erro">{erros.departamentoId}</p> : null}
+                </div>
+                <Botao bloco type="submit" disabled={enviando || departamentos.carregando}>
+                  {enviando ? 'Criando conta...' : 'Criar conta'}
+                </Botao>
+              </form>
+            ) : null}
+            <p className="troca-tela">
+              Já tem conta? <Link to="/entrar">Entrar</Link>
+            </p>
+          </>
+        )}
       </section>
     </main>
   )

@@ -1,4 +1,4 @@
-import { api } from './api'
+import { API_URL, cabecalhosApi, lerResposta } from './api'
 
 export const chamadosApi = {
   listar(filtros = {}) {
@@ -9,50 +9,84 @@ export const chamadosApi = {
     }
 
     const parametros = query.toString()
-    return api.get(`/chamados${parametros ? `?${parametros}` : ''}`)
+    return fetch(`${API_URL}/chamados${parametros ? `?${parametros}` : ''}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarMeus() {
-    return api.get('/chamados/meus')
+    return fetch(`${API_URL}/chamados/meus`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarAtribuidos() {
-    return api.get('/chamados/atribuidos')
+    return fetch(`${API_URL}/chamados/atribuidos`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarPorUsuario(id) {
-    return api.get(`/chamados/usuario/${id}`)
+    return fetch(`${API_URL}/chamados/usuario/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarPorTecnico(id) {
-    return api.get(`/chamados/tecnico/${id}`)
+    return fetch(`${API_URL}/chamados/tecnico/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   obter(id) {
-    return api.get(`/chamados/${id}`)
+    return fetch(`${API_URL}/chamados/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarHistorico(id) {
-    return api.get(`/chamados/${id}/historico`)
+    return fetch(`${API_URL}/chamados/${id}/historico`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   criar(dados) {
-    return api.post('/chamados', dados)
+    return fetch(`${API_URL}/chamados`, {
+      method: 'POST',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify(dados),
+    }).then(lerResposta)
   },
 
   atualizar(id, dados) {
-    return api.put(`/chamados/${id}`, dados)
+    return fetch(`${API_URL}/chamados/${id}`, {
+      method: 'PUT',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify(dados),
+    }).then(lerResposta)
   },
 
   atribuirTecnico(id, tecnicoId) {
-    return api.patch(`/chamados/${id}/tecnico`, { tecnicoId })
+    return fetch(`${API_URL}/chamados/${id}/tecnico`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify({ tecnicoId }),
+    }).then(lerResposta)
   },
 
   alterarStatus(id, status) {
-    return api.patch(`/chamados/${id}/status`, { status })
+    return fetch(`${API_URL}/chamados/${id}/status`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify({ status }),
+    }).then(lerResposta)
   },
 
   comentar(id, mensagem) {
-    return api.post(`/chamados/${id}/comentarios`, { mensagem })
+    return fetch(`${API_URL}/chamados/${id}/comentarios`, {
+      method: 'POST',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify({ mensagem }),
+    }).then(lerResposta)
   },
 }

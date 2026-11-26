@@ -1,33 +1,52 @@
-import { api } from './api'
+import { API_URL, cabecalhosApi, lerResposta } from './api'
 
 export const solicitacoesTecnicoApi = {
   listar(status) {
     const query = status ? `?status=${encodeURIComponent(status)}` : ''
-    return api.get(`/solicitacoes${query}`)
+    return fetch(`${API_URL}/solicitacoes${query}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarMinhas() {
-    return api.get('/solicitacoes/minhas')
+    return fetch(`${API_URL}/solicitacoes/minhas`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   listarPorUsuario(id) {
-    return api.get(`/solicitacoes/usuario/${id}`)
+    return fetch(`${API_URL}/solicitacoes/usuario/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   obter(id) {
-    return api.get(`/solicitacoes/${id}`)
+    return fetch(`${API_URL}/solicitacoes/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   solicitar() {
-    return api.post('/solicitacoes')
+    return fetch(`${API_URL}/solicitacoes`, {
+      method: 'POST',
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   aprovar(id, observacao) {
     const dados = observacao ? { observacao } : undefined
-    return api.patch(`/solicitacoes/${id}/aprovar`, dados)
+    return fetch(`${API_URL}/solicitacoes/${id}/aprovar`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(Boolean(dados)),
+      ...(dados ? { body: JSON.stringify(dados) } : {}),
+    }).then(lerResposta)
   },
 
   rejeitar(id, motivo) {
-    return api.patch(`/solicitacoes/${id}/rejeitar`, { motivo })
+    return fetch(`${API_URL}/solicitacoes/${id}/rejeitar`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify({ motivo }),
+    }).then(lerResposta)
   },
 }

@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL
+export const API_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`
   : import.meta.env.DEV
     ? '/api'
@@ -43,15 +43,16 @@ export const sessaoApi = {
   },
 }
 
-export async function requisitar(caminho, { headers: cabecalhos = {}, ...opcoes } = {}) {
+export function cabecalhosApi(json = false) {
   const token = sessaoApi.lerToken()
-  const headers = new Headers(cabecalhos)
-  if (opcoes.body && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json')
-  }
+  const headers = new Headers()
+  if (json) headers.set('Content-Type', 'application/json')
   if (token) headers.set('Authorization', `Bearer ${token}`)
+  return headers
+}
 
-  const resposta = await fetch(`${API_URL}${caminho}`, { ...opcoes, headers })
+export async function lerResposta(resposta) {
+  const token = sessaoApi.lerToken()
   if (resposta.status === 401 && token) {
     sessaoApi.limpar()
     window.dispatchEvent(new Event('helpdesk:sessao-expirada'))
@@ -73,24 +74,6 @@ export async function requisitar(caminho, { headers: cabecalhos = {}, ...opcoes 
 
   if (!resposta.ok) throw new ApiError(resposta, corpo)
   return corpo
-}
-
-export const api = {
-  get: (caminho, opcoes) => requisitar(caminho, { ...opcoes, method: 'GET' }),
-  post: (caminho, dados, opcoes) =>
-    requisitar(caminho, {
-      ...opcoes,
-      method: 'POST',
-      ...(dados === undefined ? {} : { body: JSON.stringify(dados) }),
-    }),
-  put: (caminho, dados, opcoes) =>
-    requisitar(caminho, { ...opcoes, method: 'PUT', body: JSON.stringify(dados) }),
-  patch: (caminho, dados, opcoes) =>
-    requisitar(caminho, {
-      ...opcoes,
-      method: 'PATCH',
-      ...(dados === undefined ? {} : { body: JSON.stringify(dados) }),
-    }),
 }
 
 export function mensagemDeErro(erro) {

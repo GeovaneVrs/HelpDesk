@@ -1,19 +1,32 @@
-import { api } from './api'
+import { API_URL, cabecalhosApi, lerResposta } from './api'
 
 export const autenticacaoApi = {
   entrar(email, senha) {
-    return api.post('/auth/login', { email, senha })
+    return fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify({ email, senha }),
+    }).then(lerResposta)
   },
 
   usuarioAtual() {
-    return api.get('/auth/me')
+    return fetch(`${API_URL}/auth/me`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   sair() {
-    return api.post('/auth/logout')
+    return fetch(`${API_URL}/auth/logout`, {
+      method: 'POST',
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   cadastrar(dados) {
-    return api.post('/usuarios', dados)
+    return fetch(`${API_URL}/usuarios`, {
+      method: 'POST',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify(dados),
+    }).then(lerResposta)
   },
 }

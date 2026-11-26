@@ -6,7 +6,8 @@ import { EstadoVazio } from '../../../components/ui/EstadoVazio'
 import { Marca } from '../../../components/ui/Marca'
 import { useRecurso } from '../../../hooks/useRecurso'
 import { useTitulo } from '../../../hooks/useTitulo'
-import { api, mensagemDeErro } from '../../../services/api'
+import { mensagemDeErro } from '../../../services/api'
+import { departamentosApi } from '../../../services/departamentos'
 import { usuariosApi } from '../../../services/usuarios'
 
 export function Cadastrar() {
@@ -23,7 +24,7 @@ export function Cadastrar() {
   const [enviando, setEnviando] = useState(false)
 
   const carregarDepartamentos = useCallback(
-    () => api.get('/departamentos?apenasAtivos=true'),
+    () => departamentosApi.listar({ apenasAtivos: true }),
     [],
   )
   const departamentos = useRecurso(carregarDepartamentos)

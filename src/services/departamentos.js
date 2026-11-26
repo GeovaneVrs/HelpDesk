@@ -1,28 +1,46 @@
-import { api } from './api'
+import { API_URL, cabecalhosApi, lerResposta } from './api'
 
 export const departamentosApi = {
   listar({ apenasAtivos = false } = {}) {
     const query = apenasAtivos ? '?apenasAtivos=true' : ''
-    return api.get(`/departamentos${query}`)
+    return fetch(`${API_URL}/departamentos${query}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   obter(id) {
-    return api.get(`/departamentos/${id}`)
+    return fetch(`${API_URL}/departamentos/${id}`, {
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   criar(dados) {
-    return api.post('/departamentos', dados)
+    return fetch(`${API_URL}/departamentos`, {
+      method: 'POST',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify(dados),
+    }).then(lerResposta)
   },
 
   atualizar(id, dados) {
-    return api.put(`/departamentos/${id}`, dados)
+    return fetch(`${API_URL}/departamentos/${id}`, {
+      method: 'PUT',
+      headers: cabecalhosApi(true),
+      body: JSON.stringify(dados),
+    }).then(lerResposta)
   },
 
   ativar(id) {
-    return api.patch(`/departamentos/${id}/ativar`)
+    return fetch(`${API_URL}/departamentos/${id}/ativar`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 
   desativar(id) {
-    return api.patch(`/departamentos/${id}/desativar`)
+    return fetch(`${API_URL}/departamentos/${id}/desativar`, {
+      method: 'PATCH',
+      headers: cabecalhosApi(),
+    }).then(lerResposta)
   },
 }
